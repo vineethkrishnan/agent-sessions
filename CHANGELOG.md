@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.2](https://github.com/vineethkrishnan/claude-sessions/compare/v0.1.1...v0.1.2) (2026-03-20)
+
+
+### Bug Fixes
+
+* **ci:** correct cloudflare pages project name to claude-sessions-doc ([b08a232](https://github.com/vineethkrishnan/claude-sessions/commit/b08a232cd087877aacf5dd86f673134b84564e52))
+* **ci:** fix cloudflare pages deploy and exclude spec files from build ([9f81e04](https://github.com/vineethkrishnan/claude-sessions/commit/9f81e04dd433d859f9ea3a99e46a88d0546816af))
+* **release:** rename npm package to @vineethnkrishnan/claude-sessions ([f95f5cc](https://github.com/vineethkrishnan/claude-sessions/commit/f95f5cc2e8e1b9e71dc583afe8a17198a9a0ba62))
+
 ## [0.1.1](https://github.com/vineethkrishnan/claude-sessions/compare/v0.1.0...v0.1.1) (2026-03-20)
 
 

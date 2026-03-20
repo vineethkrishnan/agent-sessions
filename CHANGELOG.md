@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/vineethkrishnan/claude-sessions/compare/v0.1.2...v0.1.3) (2026-03-20)
+
+
+### Documentation
+
+* update install guides with scoped package name and badges ([4ebf8e3](https://github.com/vineethkrishnan/claude-sessions/commit/4ebf8e3bce53642bdf26dfe416ab9330af6c830d))
+
 ## [0.1.2](https://github.com/vineethkrishnan/claude-sessions/compare/v0.1.1...v0.1.2) (2026-03-20)
 
 

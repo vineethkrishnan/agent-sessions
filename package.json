@@ -1,0 +1,80 @@
+{
+  "name": "claude-sessions",
+  "version": "0.1.0",
+  "description": "Interactive session manager for Claude Code — browse, search, delete, and resume past conversations",
+  "type": "module",
+  "bin": {
+    "claude-sessions": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:cov": "vitest run --coverage",
+    "lint": "eslint src/",
+    "lint:check": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "lint:strict": "eslint src/ --max-warnings 0",
+    "lint:dead-code": "knip",
+    "lint:duplicates": "jscpd src/",
+    "analyze": "npm run lint:dead-code && npm run lint:duplicates && npm run lint:strict",
+    "format": "prettier --write 'src/**/*.{ts,tsx}'",
+    "format:check": "prettier --check 'src/**/*.{ts,tsx}'",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "prepare": "husky"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "cli",
+    "session",
+    "resume",
+    "tui",
+    "terminal"
+  ],
+  "author": "Vineeth N K",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vineethkrishnan/claude-sessions.git"
+  },
+  "dependencies": {
+    "commander": "^13.1.0",
+    "ink": "^5.2.0",
+    "ink-text-input": "^6.0.0",
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.15.2",
+    "@types/react": "^18.3.20",
+    "@vitest/coverage-v8": "^4.1.0",
+    "eslint": "^10.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "jscpd": "^4.0.8",
+    "knip": "^6.0.0",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.57.1",
+    "vitepress": "^1.6.4",
+    "vitest": "^4.1.0"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+name: Commit Lint
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  lint-pr-title:
+    name: Validate PR Title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            refactor
+            chore
+            docs
+            test
+            build
+            ci
+            perf
+            hotfix
+          scopes: |
+            session
+            parser
+            cli
+            tui
+            search
+            delete
+            resume
+            fzf
+            splash
+            domain
+            application
+            infrastructure
+            presenter
+            deps
+            docs
+            security
+            release
+            test
+            lint
+          requireScope: false
+          subjectPattern: ^(?![A-Z]).+$
+          subjectPatternError: |
+            The subject "{subject}" found in the pull request title "{title}"
+            must start with a lowercase letter.
+            Example: "feat(cli): add dry-run validation checks"

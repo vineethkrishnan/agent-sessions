@@ -1,0 +1,18 @@
+#!/bin/sh
+
+commit_msg=$(cat "$1")
+
+# Conventional Commits pattern
+pattern="^(feat|fix|refactor|chore|docs|style|perf|test|build|ci|revert|hotfix)(\([a-z]+(-[a-z]+)*\))?: .+"
+
+if ! echo "$commit_msg" | grep -qE "$pattern"; then
+  echo ""
+  echo "ERROR: Commit message does not follow Conventional Commits format."
+  echo ""
+  echo "  Expected: <type>(<scope>): <subject>"
+  echo "  Example:  feat(session): add fuzzy search filtering"
+  echo ""
+  echo "  Valid types: feat, fix, refactor, chore, docs, style, perf, test, build, ci"
+  echo ""
+  exit 1
+fi

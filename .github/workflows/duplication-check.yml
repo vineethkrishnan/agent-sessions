@@ -1,0 +1,21 @@
+name: Duplication Check
+
+on:
+  pull_request:
+    paths:
+      - "src/**/*.ts"
+      - "src/**/*.tsx"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for code duplication
+        uses: kucherenko/jscpd-github-action@v1
+        with:
+          path: src
+          threshold: 5
+          reporters: console
+          language: typescript

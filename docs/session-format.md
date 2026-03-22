@@ -29,6 +29,8 @@ Each line in a `.jsonl` file is a JSON object representing a message:
 
 ## What claude-sessions Extracts
 
+### Session List
+
 | Field | Source |
 |-------|--------|
 | Session ID | Filename (without `.jsonl`) |
@@ -38,6 +40,10 @@ Each line in a `.jsonl` file is a JSON object representing a message:
 | Message Count | Count of human + assistant messages |
 | Preview | First human message, truncated to 80 chars |
 | Working Directory | Decoded from directory path |
+
+### Session Preview
+
+When you press `p` on a session, the tool parses the full JSONL file and extracts the first 20 user/assistant messages with their complete text content. This lets you review a conversation before resuming it.
 
 ## Path Decoding
 

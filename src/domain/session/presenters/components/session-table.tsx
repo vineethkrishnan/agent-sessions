@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Text, Box, useInput, useApp } from "ink";
 import type { Session } from "../../domain/session.model.js";
 import {

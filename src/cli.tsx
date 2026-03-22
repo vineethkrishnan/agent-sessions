@@ -2,7 +2,6 @@
 
 import { Command } from "commander";
 import { render } from "ink";
-import React from "react";
 import { createSessionModule } from "./domain/session/session.module.js";
 import { App, type CliOptions } from "./domain/session/presenters/app.js";
 import {

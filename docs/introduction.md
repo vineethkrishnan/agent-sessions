@@ -4,6 +4,8 @@
 
 Claude Code provides `--resume <session-id>` and `--continue`, but no way to browse or search through your session history. This tool fills that gap.
 
+![demo](./assets/demo.gif)
+
 ## Why?
 
 - You have dozens (or hundreds) of Claude Code sessions
@@ -17,6 +19,7 @@ Claude Code provides `--resume <session-id>` and `--continue`, but no way to bro
 |---------|-------------|
 | **Browse** | All sessions sorted by most recent |
 | **Metadata** | Date, project, git branch, message count, first message preview |
+| **Preview** | Peek into a session's conversation before resuming |
 | **Search** | Live filter across project, branch, and message text |
 | **Resume** | Launch `claude --resume` with one keypress |
 | **Delete** | Remove old sessions with confirmation |
@@ -32,6 +35,6 @@ Claude Code provides `--resume <session-id>` and `--continue`, but no way to bro
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 20+
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI installed
 - [fzf](https://github.com/junegunn/fzf) (optional, for `--fzf` mode)

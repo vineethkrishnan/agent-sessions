@@ -1,4 +1,3 @@
-import React from "react";
 import { Text, Box, useInput } from "ink";
 import type { Session } from "../../domain/session.model.js";
 import { formatDate } from "../formatters/table-formatter.js";

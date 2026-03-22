@@ -46,6 +46,28 @@ npm run test:watch    # Watch mode
 npm run test:cov      # With coverage report
 ```
 
+## Regenerating Screenshots
+
+GIF recordings are created with [VHS](https://github.com/charmbracelet/vhs). Tape scripts live in `vhs/` and output to `docs/assets/`.
+
+```bash
+# Install VHS (macOS)
+brew install vhs
+
+# Regenerate all GIFs
+for tape in vhs/*.tape; do vhs "$tape"; done
+
+# Regenerate a specific one
+vhs vhs/demo.tape
+```
+
+::: tip
+On macOS, set `CHROME_PATH` if VHS can't find Chrome:
+```bash
+CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" vhs vhs/demo.tape
+```
+:::
+
 ## Commit Convention
 
 Follows [Conventional Commits](https://www.conventionalcommits.org/):

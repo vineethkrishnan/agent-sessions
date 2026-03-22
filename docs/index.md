@@ -17,6 +17,9 @@ features:
   - title: Browse Sessions
     details: View all your Claude Code sessions sorted by most recent, with project, branch, and message preview.
     icon: 📋
+  - title: Session Preview
+    details: Press 'p' to peek into any session's conversation — see the full exchange before resuming.
+    icon: 👁️
   - title: Search & Filter
     details: Fuzzy search across project names, git branches, and message previews to find any session instantly.
     icon: 🔍
@@ -29,7 +32,4 @@ features:
   - title: fzf Integration
     details: Power users can use fzf for selection with the --fzf flag for a familiar fuzzy-finding experience.
     icon: ⚡
-  - title: Animated Splash
-    details: A fun, themed splash screen with typewriter animation that you can skip with --no-splash.
-    icon: 🎬
 ---

@@ -4,31 +4,19 @@
 [![CI](https://github.com/vineethkrishnan/claude-sessions/actions/workflows/ci.yml/badge.svg)](https://github.com/vineethkrishnan/claude-sessions/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+**[Documentation](https://claude-sessions.vineethnk.in/)** · **[npm](https://www.npmjs.com/package/@vineethnkrishnan/claude-sessions)** · **[GitHub](https://github.com/vineethkrishnan/claude-sessions)**
+
 Interactive session manager for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Browse, search, delete, and resume past conversations from your terminal.
 
 Claude Code provides `--resume <session-id>` and `--continue`, but no way to browse or search through your session history. This tool fills that gap.
 
-```
-   _____ _                 _
-  /  __ \ |               | |
-  | /  \/ | __ _ _   _  __| | ___
-  | |   | |/ _` | | | |/ _` |/ _ \
-  | \__/\ | (_| | |_| | (_| |  __/
-   \____/_|\__,_|\__,_|\__,_|\___|
-
-
- _____               _
-/  ___|             (_)
-\ `--.  ___  ___ ___ _  ___  _ __  ___
- `--. \/ _ \/ __/ __| |/ _ \| '_ \/ __|
-/\__/ /  __/\__ \__ \ | (_) | | | \__ \
-\____/ \___||___/___/_|\___/|_| |_|___/
-```
+![demo](docs/assets/demo.gif)
 
 ## Features
 
 - Browse all Claude Code sessions sorted by most recent
 - Shows date, project, git branch, message count, and first message preview
+- **Session preview** — press `p` to peek into a conversation before resuming
 - Fuzzy search/filter to find sessions quickly
 - Delete old sessions you no longer need
 - Optional fzf integration for power users
@@ -64,8 +52,9 @@ claude-sessions --no-splash  # Skip splash screen
 | `Page Up/Down` | Jump 10                     |
 | `/`         | Search / filter                |
 | `Enter`     | Resume session (or end search) |
+| `p`         | Preview session conversation   |
 | `d`         | Delete selected session        |
-| `Esc`       | Clear search filter            |
+| `Esc`       | Clear search / close preview   |
 | `q`         | Quit                           |
 
 ## Architecture
@@ -77,12 +66,14 @@ src/
 ├── domain/session/              # Session domain module
 │   ├── domain/                  # Pure business logic (zero deps)
 │   │   ├── session.model.ts     # Session entity + filtering
+│   │   ├── session-detail.model.ts  # Conversation detail model
 │   │   └── session.error.ts     # Domain errors
 │   ├── application/             # Use cases + ports
 │   │   ├── ports/               # Interface contracts
 │   │   ├── list-sessions.use-case.ts
 │   │   ├── delete-session.use-case.ts
-│   │   └── resume-session.use-case.ts
+│   │   ├── resume-session.use-case.ts
+│   │   └── get-session-detail.use-case.ts
 │   ├── infrastructure/          # Adapters (fs, spawn)
 │   │   ├── fs-session-repository.adapter.ts
 │   │   ├── fs-session-storage.adapter.ts
@@ -150,6 +141,10 @@ chore: update dependencies
 - Node.js 20+
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI installed
 - [fzf](https://github.com/junegunn/fzf) (optional)
+
+## Documentation
+
+Full documentation is available at **[claude-sessions.vineethnk.in](https://claude-sessions.vineethnk.in/)**.
 
 ## License
 

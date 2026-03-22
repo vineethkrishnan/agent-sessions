@@ -5,28 +5,30 @@ claude-sessions follows a **vertical-slice hexagonal architecture** with clean s
 ## Layer Diagram
 
 ```
-┌─────────────────────────────────────────┐
-│  Presenters (Ink/React)                 │
-│  ├── App, SessionTable, SplashScreen    │
-│  ├── Hooks (useSessions)                │
-│  └── Formatters                         │
-├─────────────────────────────────────────┤
-│  Application (Use Cases)                │
-│  ├── ListSessionsUseCase                │
-│  ├── DeleteSessionUseCase               │
-│  └── ResumeSessionUseCase               │
-├─────────────────────────────────────────┤
-│  Domain (Pure Business Logic)           │
-│  ├── Session entity                     │
-│  ├── Session errors                     │
-│  └── matchesFilter logic                │
-├─────────────────────────────────────────┤
-│  Infrastructure (Adapters)              │
-│  ├── FsSessionRepositoryAdapter         │
-│  ├── FsSessionStorageAdapter            │
-│  ├── CliProcessLauncherAdapter          │
-│  └── JSONL parser                       │
-└─────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│  Presenters (Ink/React)                          │
+│  ├── App, SessionTable, SessionPreview, Splash   │
+│  ├── Hooks (useSessions)                         │
+│  └── Formatters                                  │
+├──────────────────────────────────────────────────┤
+│  Application (Use Cases)                         │
+│  ├── ListSessionsUseCase                         │
+│  ├── GetSessionDetailUseCase                     │
+│  ├── DeleteSessionUseCase                        │
+│  └── ResumeSessionUseCase                        │
+├──────────────────────────────────────────────────┤
+│  Domain (Pure Business Logic)                    │
+│  ├── Session entity                              │
+│  ├── SessionDetail + SessionMessage              │
+│  ├── Session errors                              │
+│  └── matchesFilter logic                         │
+├──────────────────────────────────────────────────┤
+│  Infrastructure (Adapters)                       │
+│  ├── FsSessionRepositoryAdapter                  │
+│  ├── FsSessionStorageAdapter                     │
+│  ├── CliProcessLauncherAdapter                   │
+│  └── JSONL parser                                │
+└──────────────────────────────────────────────────┘
 ```
 
 ## Dependency Flow
@@ -47,12 +49,14 @@ src/
 ├── domain/session/              # Session domain module
 │   ├── domain/                  # Pure business logic (zero deps)
 │   │   ├── session.model.ts     # Session entity + filtering
+│   │   ├── session-detail.model.ts  # Conversation detail model
 │   │   └── session.error.ts     # Domain errors
 │   ├── application/             # Use cases + ports
 │   │   ├── ports/               # Interface contracts
 │   │   ├── list-sessions.use-case.ts
 │   │   ├── delete-session.use-case.ts
-│   │   └── resume-session.use-case.ts
+│   │   ├── resume-session.use-case.ts
+│   │   └── get-session-detail.use-case.ts
 │   ├── infrastructure/          # Adapters (fs, spawn)
 │   │   ├── fs-session-repository.adapter.ts
 │   │   ├── fs-session-storage.adapter.ts
@@ -83,6 +87,7 @@ export function createSessionModule(): SessionModule {
     listSessionsUseCase: new ListSessionsUseCase(repository),
     deleteSessionUseCase: new DeleteSessionUseCase(storage),
     resumeSessionUseCase: new ResumeSessionUseCase(launcher),
+    getSessionDetailUseCase: new GetSessionDetailUseCase(repository),
   };
 }
 ```

@@ -8,11 +8,33 @@
 | `Page Up` / `Page Down` | Jump 10 sessions |
 | `/` | Start search / filter |
 | `Enter` | Resume selected session (or confirm search) |
+| `p` | Preview session conversation |
 | `d` | Delete selected session (with confirmation) |
 | `Esc` | Clear search filter |
 | `q` | Quit |
 
+## Preview Mode
+
+![preview](./assets/preview.gif)
+
+When you press `p` on a session, a detail pane opens showing:
+
+- **Session metadata** — ID, project, branch, date, message count, working directory
+- **Conversation history** — The first 20 messages (user and assistant exchanges)
+
+Preview keybindings:
+
+| Key | Action |
+|-----|--------|
+| `↑` / `↓` | Scroll through messages |
+| `Page Up` / `Page Down` | Scroll by 10 lines |
+| `Enter` | Resume the session |
+| `p` / `Esc` | Close preview, return to list |
+| `q` | Quit |
+
 ## Search Mode
+
+![search](./assets/search.gif)
 
 When you press `/`, the search bar activates:
 
@@ -22,6 +44,8 @@ When you press `/`, the search bar activates:
 - Press `Esc` to clear the filter
 
 ## Delete Confirmation
+
+![delete](./assets/delete.gif)
 
 When you press `d` on a session:
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Box } from "ink";
 import type { SessionModule } from "../session.module.js";
 import { SplashScreen } from "./components/splash-screen.js";

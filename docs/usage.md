@@ -16,7 +16,9 @@ This launches the interactive TUI showing all your Claude Code sessions.
 claude-sessions
 ```
 
-Browse sessions in a full-screen table. Use arrow keys to navigate, `/` to search, `Enter` to resume.
+![splash](./assets/splash.gif)
+
+Browse sessions in a full-screen table. Use arrow keys to navigate, `/` to search, `p` to preview a session's conversation, `Enter` to resume.
 
 ### fzf Mode
 

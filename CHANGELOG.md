@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/vineethkrishnan/claude-sessions/compare/v0.1.4...v0.1.5) (2026-03-22)
+
+
+### Documentation
+
+* add documentation site link and session preview details ([#11](https://github.com/vineethkrishnan/claude-sessions/issues/11)) ([3176861](https://github.com/vineethkrishnan/claude-sessions/commit/3176861a5c9f68b904044794d862f6251940ff26))
+
 ## [0.1.4](https://github.com/vineethkrishnan/claude-sessions/compare/v0.1.3...v0.1.4) (2026-03-22)
 
 

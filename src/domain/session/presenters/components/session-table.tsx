@@ -19,6 +19,7 @@ interface SessionTableProps {
   onSetFilter: (filter: string) => void;
   onDelete: (session: Session) => void;
   onResume: (session: Session) => void;
+  onPreview: (session: Session) => void;
 }
 
 export function SessionTable({
@@ -29,6 +30,7 @@ export function SessionTable({
   onSetFilter,
   onDelete,
   onResume,
+  onPreview,
 }: SessionTableProps) {
   const { exit } = useApp();
   const [selected, setSelected] = useState(0);
@@ -76,6 +78,8 @@ export function SessionTable({
       setSelected(0);
     } else if (input === "/" && !key.ctrl) {
       setIsSearchMode(true);
+    } else if (input === "p" && !key.ctrl && sessions.length > 0) {
+      onPreview(sessions[clampedSelected]!);
     } else if (input === "d" && !key.ctrl && sessions.length > 0) {
       setDeleteTarget(sessions[clampedSelected]!);
     } else if (input === "q" || input === "Q") {
@@ -112,7 +116,7 @@ export function SessionTable({
       </Box>
 
       <Text dimColor>
-        Arrow keys: navigate Enter: select /: search d: delete Esc: clear q: quit
+        Arrow keys: navigate Enter: resume p: preview /: search d: delete Esc: clear q: quit
       </Text>
 
       {isSearchMode && (

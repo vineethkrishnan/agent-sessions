@@ -17,7 +17,7 @@ function makeSession(id: string, project: string, branch = "main") {
 }
 
 function createMockRepo(sessions: Session[]): SessionRepositoryPort {
-  return { findAll: () => sessions };
+  return { findAll: () => sessions, getDetail: () => null! };
 }
 
 describe("ListSessionsUseCase", () => {

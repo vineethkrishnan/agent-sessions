@@ -17,7 +17,7 @@ Enter
 Sleep 500ms
 Show
 
-Type "node dist/cli.js"
+Type "claude-sessions"
 Enter
 Sleep 5s
 

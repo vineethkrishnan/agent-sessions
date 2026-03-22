@@ -17,7 +17,7 @@ Enter
 Sleep 500ms
 Show
 
-Type "node dist/cli.js --no-splash"
+Type "claude-sessions --no-splash"
 Enter
 Sleep 3s
 

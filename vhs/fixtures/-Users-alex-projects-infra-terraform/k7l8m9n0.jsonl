@@ -1,0 +1,2 @@
+{"type":"user","message":{"content":"Set up a staging environment that mirrors production"},"gitBranch":"feat/staging-env","cwd":"/Users/alex/projects/infra-terraform"}
+{"type":"assistant","message":{"content":"I'll create a new Terraform workspace for staging with scaled-down resources. The module structure will be shared between prod and staging using variable files for environment-specific values like instance sizes and replica counts."}}

@@ -1,5 +1,5 @@
 # Delete flow: navigate → press d → cancel
-# Run: CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" vhs vhs/delete.tape
+# Run: vhs vhs/delete.tape
 
 Output docs/assets/delete.gif
 
@@ -10,6 +10,12 @@ Set Width 1200
 Set Height 600
 Set Padding 20
 Set TypingSpeed 50ms
+
+Hide
+Type "export CLAUDE_SESSIONS_DIR=vhs/fixtures"
+Enter
+Sleep 500ms
+Show
 
 Type "node dist/cli.js --no-splash"
 Enter

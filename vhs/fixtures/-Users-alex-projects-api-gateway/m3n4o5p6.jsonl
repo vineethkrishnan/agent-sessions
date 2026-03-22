@@ -1,0 +1,2 @@
+{"type":"user","message":{"content":"Add health check endpoints for all downstream services"},"gitBranch":"feat/health-check","cwd":"/Users/alex/projects/api-gateway"}
+{"type":"assistant","message":{"content":"I'll create a /health endpoint that aggregates the status of all downstream services. Each service check will have a timeout and the overall health will be degraded if any dependency is unhealthy."}}

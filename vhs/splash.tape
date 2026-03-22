@@ -1,5 +1,5 @@
 # Splash screen animation
-# Run: CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" vhs vhs/splash.tape
+# Run: vhs vhs/splash.tape
 
 Output docs/assets/splash.gif
 
@@ -10,6 +10,12 @@ Set Width 1200
 Set Height 600
 Set Padding 20
 Set TypingSpeed 50ms
+
+Hide
+Type "export CLAUDE_SESSIONS_DIR=vhs/fixtures"
+Enter
+Sleep 500ms
+Show
 
 Type "node dist/cli.js"
 Enter

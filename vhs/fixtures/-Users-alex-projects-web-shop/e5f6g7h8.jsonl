@@ -1,0 +1,4 @@
+{"type":"user","message":{"content":"Products are showing as in stock when they are actually sold out"},"gitBranch":"fix/inventory-sync","cwd":"/Users/alex/projects/web-shop"}
+{"type":"assistant","message":{"content":"This looks like a race condition in the inventory sync. When two users purchase simultaneously, the stock count isn't being decremented atomically. I'll add optimistic locking to the inventory update query."}}
+{"type":"user","message":{"content":"That fixed it, thanks!"},"gitBranch":"fix/inventory-sync","cwd":"/Users/alex/projects/web-shop"}
+{"type":"assistant","message":{"content":"Great! I also added a database constraint to prevent negative stock values as a safety net."}}

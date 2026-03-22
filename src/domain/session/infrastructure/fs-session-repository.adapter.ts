@@ -11,7 +11,10 @@ export class FsSessionRepositoryAdapter implements SessionRepositoryPort {
   private readonly sessionsDir: string;
 
   constructor(sessionsDir?: string) {
-    this.sessionsDir = sessionsDir ?? path.join(os.homedir(), ".claude", "projects");
+    this.sessionsDir =
+      sessionsDir ??
+      process.env.CLAUDE_SESSIONS_DIR ??
+      path.join(os.homedir(), ".claude", "projects");
   }
 
   findAll(): Session[] {

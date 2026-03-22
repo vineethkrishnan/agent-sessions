@@ -1,6 +1,6 @@
 {
   "name": "@vineethnkrishnan/claude-sessions",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Interactive session manager for Claude Code — browse, search, delete, and resume past conversations",
   "type": "module",
   "bin": {

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/vineethkrishnan/claude-sessions/compare/v0.1.3...v0.1.4) (2026-03-22)
+
+
+### Features
+
+* **session:** add session preview pane with conversation detail ([#9](https://github.com/vineethkrishnan/claude-sessions/issues/9)) ([4a2686f](https://github.com/vineethkrishnan/claude-sessions/commit/4a2686f58aab7dad968d0580dc86556933f37e5e))
+
 ## [0.1.3](https://github.com/vineethkrishnan/claude-sessions/compare/v0.1.2...v0.1.3) (2026-03-20)
 
 

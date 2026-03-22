@@ -3,6 +3,7 @@ import { Box } from "ink";
 import type { SessionModule } from "../session.module.js";
 import { SplashScreen } from "./components/splash-screen.js";
 import { SessionTable } from "./components/session-table.js";
+import { SessionPreview } from "./components/session-preview.js";
 import { useSessions } from "./hooks/use-sessions.js";
 
 export interface CliOptions {
@@ -18,12 +19,24 @@ interface AppProps {
 }
 
 export function App({ module, options, version }: AppProps) {
-  const { filtered, filter, setFilter, deleteSession, resumeSession, isLoaded, totalCount } =
-    useSessions({
-      listUseCase: module.listSessionsUseCase,
-      deleteUseCase: module.deleteSessionUseCase,
-      resumeUseCase: module.resumeSessionUseCase,
-    });
+  const {
+    filtered,
+    filter,
+    setFilter,
+    deleteSession,
+    resumeSession,
+    openPreview,
+    closePreview,
+    previewSession,
+    previewDetail,
+    isLoaded,
+    totalCount,
+  } = useSessions({
+    listUseCase: module.listSessionsUseCase,
+    deleteUseCase: module.deleteSessionUseCase,
+    resumeUseCase: module.resumeSessionUseCase,
+    getDetailUseCase: module.getSessionDetailUseCase,
+  });
 
   const [showSplash, setShowSplash] = useState(!options.noSplash);
 
@@ -38,6 +51,19 @@ export function App({ module, options, version }: AppProps) {
     return <SplashScreen version={version} loading={!isLoaded} />;
   }
 
+  if (previewSession && previewDetail) {
+    return (
+      <Box flexDirection="column">
+        <SessionPreview
+          session={previewSession}
+          detail={previewDetail}
+          onClose={closePreview}
+          onResume={() => resumeSession(previewSession)}
+        />
+      </Box>
+    );
+  }
+
   return (
     <Box flexDirection="column">
       <SessionTable
@@ -48,6 +74,7 @@ export function App({ module, options, version }: AppProps) {
         onSetFilter={setFilter}
         onDelete={deleteSession}
         onResume={resumeSession}
+        onPreview={openPreview}
       />
     </Box>
   );

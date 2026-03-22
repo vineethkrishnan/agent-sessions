@@ -3,7 +3,8 @@ import path from "node:path";
 import os from "node:os";
 import type { SessionRepositoryPort } from "../application/ports/session-repository.port.js";
 import { Session } from "../domain/session.model.js";
-import { parseSessionFile } from "./jsonl-parser.js";
+import { SessionDetail } from "../domain/session-detail.model.js";
+import { parseSessionFile, parseSessionDetail } from "./jsonl-parser.js";
 import { decodeProjectPath } from "../../../common/helpers/path.helper.js";
 
 export class FsSessionRepositoryAdapter implements SessionRepositoryPort {
@@ -58,6 +59,16 @@ export class FsSessionRepositoryAdapter implements SessionRepositoryPort {
         modifiedAt: file.mtime,
         cwd: metadata.cwd,
       });
+    });
+  }
+
+  getDetail(filePath: string): SessionDetail {
+    const parsed = parseSessionDetail(filePath);
+    return new SessionDetail({
+      messages: parsed.messages,
+      totalMessages: parsed.totalMessages,
+      cwd: parsed.cwd,
+      gitBranch: parsed.gitBranch,
     });
   }
 }

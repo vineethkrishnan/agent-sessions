@@ -4,11 +4,13 @@ import { CliProcessLauncherAdapter } from "./infrastructure/cli-process-launcher
 import { ListSessionsUseCase } from "./application/list-sessions.use-case.js";
 import { DeleteSessionUseCase } from "./application/delete-session.use-case.js";
 import { ResumeSessionUseCase } from "./application/resume-session.use-case.js";
+import { GetSessionDetailUseCase } from "./application/get-session-detail.use-case.js";
 
 export interface SessionModule {
   listSessionsUseCase: ListSessionsUseCase;
   deleteSessionUseCase: DeleteSessionUseCase;
   resumeSessionUseCase: ResumeSessionUseCase;
+  getSessionDetailUseCase: GetSessionDetailUseCase;
 }
 
 export function createSessionModule(): SessionModule {
@@ -20,5 +22,6 @@ export function createSessionModule(): SessionModule {
     listSessionsUseCase: new ListSessionsUseCase(sessionRepository),
     deleteSessionUseCase: new DeleteSessionUseCase(sessionStorage),
     resumeSessionUseCase: new ResumeSessionUseCase(processLauncher),
+    getSessionDetailUseCase: new GetSessionDetailUseCase(sessionRepository),
   };
 }

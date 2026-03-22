@@ -66,4 +66,15 @@ describe("FsSessionRepositoryAdapter", () => {
     const adapter = new FsSessionRepositoryAdapter("/nonexistent/path");
     expect(adapter.findAll()).toHaveLength(0);
   });
+
+  it("getDetail returns parsed conversation messages", () => {
+    const adapter = new FsSessionRepositoryAdapter(tmpDir);
+    const sessions = adapter.findAll();
+    const detail = adapter.getDetail(sessions[0]!.filePath);
+
+    expect(detail.messages).toHaveLength(1);
+    expect(detail.messages[0]!.role).toBe("user");
+    expect(detail.messages[0]!.content).toBe("Fix the bug");
+    expect(detail.totalMessages).toBe(1);
+  });
 });

@@ -1,0 +1,2 @@
+{"type":"user","message":{"content":"Our CSV import is failing on files larger than 2GB"},"gitBranch":"main","cwd":"/Users/alex/projects/data-pipeline"}
+{"type":"assistant","message":{"content":"The issue is that the entire file is being loaded into memory. I'll switch to a streaming parser that processes the CSV line by line using Node.js readable streams. This will handle files of any size with constant memory usage."}}

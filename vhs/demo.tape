@@ -1,5 +1,5 @@
 # Full demo: browse → preview → search → quit
-# Run: CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" vhs vhs/demo.tape
+# Run: vhs vhs/demo.tape
 
 Output docs/assets/demo.gif
 
@@ -10,6 +10,12 @@ Set Width 1200
 Set Height 600
 Set Padding 20
 Set TypingSpeed 50ms
+
+Hide
+Type "export CLAUDE_SESSIONS_DIR=vhs/fixtures"
+Enter
+Sleep 500ms
+Show
 
 Type "node dist/cli.js --no-splash"
 Enter
@@ -44,7 +50,7 @@ Sleep 2s
 # Open search
 Type "/"
 Sleep 600ms
-Type "backupctl"
+Type "api-gateway"
 Sleep 2s
 
 # Confirm search

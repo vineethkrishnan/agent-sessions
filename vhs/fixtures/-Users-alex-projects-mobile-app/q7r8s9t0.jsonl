@@ -1,0 +1,6 @@
+{"type":"user","message":{"content":"Implement push notifications with Firebase Cloud Messaging"},"gitBranch":"feat/push-notifications","cwd":"/Users/alex/projects/mobile-app"}
+{"type":"assistant","message":{"content":"I'll set up FCM for both iOS and Android. First, let me configure the native modules, then create a notification service that handles foreground and background messages."}}
+{"type":"user","message":{"content":"Can we also handle deep linking from notifications?"},"gitBranch":"feat/push-notifications","cwd":"/Users/alex/projects/mobile-app"}
+{"type":"assistant","message":{"content":"Yes, I'll add deep link parsing to the notification handler. When a user taps a notification, it will navigate to the relevant screen based on the payload data."}}
+{"type":"user","message":{"content":"Show me how to test this locally"},"gitBranch":"feat/push-notifications","cwd":"/Users/alex/projects/mobile-app"}
+{"type":"assistant","message":{"content":"For local testing, you can use the Firebase console to send test messages. I'll also create a script that sends test notifications via the FCM HTTP API so you can automate it."}}

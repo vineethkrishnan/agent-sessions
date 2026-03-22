@@ -1,0 +1,2 @@
+{"type":"user","message":{"content":"Some text is invisible in dark mode on the settings screen"},"gitBranch":"fix/dark-mode-colors","cwd":"/Users/alex/projects/mobile-app"}
+{"type":"assistant","message":{"content":"The issue is that hardcoded color values are used instead of theme tokens. I'll replace all instances of #333 and #000 with the appropriate theme variables so they adapt to the color scheme."}}

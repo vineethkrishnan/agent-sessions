@@ -20,7 +20,7 @@ While tools like [Claude Code](https://docs.anthropic.com/en/docs/claude-code), 
 | **Claude** | `~/.claude/projects/` | JSONL | `claude --resume` |
 | **Gemini** | `~/.gemini/tmp/` | JSON/JSONL | `gemini --resume` |
 | **OpenAI Codex** | `~/.codex/sessions/` | JSONL | `codex resume` |
-| **Cursor** | `~/Library/.../workspaceStorage/` | SQLite | `cursor` (Workspace) |
+| **Cursor** | `~/.cursor-agent/sessions/` | JSONL | `agent --resume` |
 
 ## Features
 

@@ -47,7 +47,7 @@ When an agent is selected in the UI, the repository sets the corresponding provi
 
 ### Example: Cursor Session Provider
 
-Cursor is the most complex provider as it reads from an SQLite database and maps workspace hashes to project paths.
+Cursor reads JSONL session files from `~/.cursor-agent/sessions/`.
 
 ![Cursor Provider](./assets/code/cursor-provider.png)
 
@@ -55,25 +55,42 @@ Cursor is the most complex provider as it reads from an SQLite database and maps
 
 ```
 src/
-├── domain/session/              # Session domain module
-│   ├── domain/                  # Pure business logic
-│   ├── application/             # Use cases + ports
-│   │   ├── ports/               # SessionProvider contract
-│   │   └── ...use-case.ts
-│   ├── infrastructure/          # Adapters & Providers
-│   │   ├── claude-session.provider.ts
-│   │   ├── gemini-session.provider.ts
-│   │   ├── openai-codex.provider.ts
-│   │   ├── cursor-session.provider.ts
-│   │   ├── multi-agent-session-repository.adapter.ts
-│   │   ├── fs-session-storage.adapter.ts
-│   │   └── ...parser.ts
-│   ├── presenters/              # UI layer (Ink/React)
-│   │   ├── components/          # AgentSelector, Table, etc.
-│   │   └── ...
-│   └── session.module.ts        # Module wiring (DI)
-├── common/helpers/              # Utilities
-└── cli.tsx                      # Entry point
+├── domain/session/                  # Session domain module
+│   ├── domain/                      # Pure business logic
+│   │   ├── session.model.ts         # Session entity + filtering
+│   │   ├── session-detail.model.ts  # Conversation detail model
+│   │   └── session.error.ts         # Domain errors
+│   ├── application/                 # Use cases + ports
+│   │   ├── ports/                   # Interface contracts
+│   │   │   ├── session-provider.port.ts
+│   │   │   ├── session-repository.port.ts
+│   │   │   ├── session-storage.port.ts
+│   │   │   ├── process-launcher.port.ts
+│   │   │   └── provider-management.port.ts
+│   │   └── use-cases/
+│   │       ├── list-sessions.use-case.ts
+│   │       ├── get-session-detail.use-case.ts
+│   │       ├── delete-session.use-case.ts
+│   │       └── resume-session.use-case.ts
+│   ├── infrastructure/
+│   │   ├── adapters/                # Generic adapters
+│   │   │   ├── multi-agent-session-repository.adapter.ts
+│   │   │   ├── fs-session-storage.adapter.ts
+│   │   │   └── cli-process-launcher.adapter.ts
+│   │   ├── providers/               # One folder per agent
+│   │   │   ├── claude/
+│   │   │   ├── cursor/
+│   │   │   ├── gemini/
+│   │   │   └── openai/
+│   │   └── parsers/
+│   │       └── jsonl-parser.ts
+│   ├── presenters/                  # UI layer (Ink/React)
+│   │   ├── components/              # AgentSelector, Table, etc.
+│   │   ├── hooks/                   # useSessions
+│   │   └── formatters/              # Table formatting
+│   └── session.module.ts            # Module wiring (DI)
+├── common/helpers/                  # Cross-domain utilities
+└── cli.tsx                          # Entry point
 ```
 
 ## Module Wiring
@@ -81,20 +98,24 @@ src/
 `session.module.ts` initializes the repository and registers all providers:
 
 ```ts
-export function createSessionModule(): SessionModule {
-  const multiAgentRepository = new MultiAgentSessionRepository();
-  const processLauncher = new CliProcessLauncherAdapter();
+export function createSessionModule() {
+  const providers = [
+    new ClaudeSessionProvider(),
+    new CursorSessionProvider(),
+    new GeminiSessionProvider(),
+    new OpenAICodexProvider(),
+  ];
 
-  // Register all supported agent providers
-  multiAgentRepository.registerProvider(new ClaudeSessionProvider(processLauncher));
-  multiAgentRepository.registerProvider(new GeminiSessionProvider(processLauncher));
-  multiAgentRepository.registerProvider(new OpenAICodexProvider(processLauncher));
-  multiAgentRepository.registerProvider(new CursorSessionProvider(processLauncher));
+  const repository = new MultiAgentSessionRepositoryAdapter(providers);
+  const launcher = new CliProcessLauncherAdapter();
+  const storage = new FsSessionStorageAdapter();
 
   return {
-    multiAgentRepository,
-    listSessionsUseCase: new ListSessionsUseCase(multiAgentRepository),
-    // ...
+    listSessionsUseCase: new ListSessionsUseCase(repository),
+    getSessionDetailUseCase: new GetSessionDetailUseCase(repository),
+    resumeSessionUseCase: new ResumeSessionUseCase(launcher, providers),
+    deleteSessionUseCase: new DeleteSessionUseCase(storage),
+    multiAgentRepository: repository,
   };
 }
 ```

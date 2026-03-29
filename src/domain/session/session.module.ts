@@ -1,27 +1,34 @@
-import { FsSessionRepositoryAdapter } from "./infrastructure/fs-session-repository.adapter.js";
-import { FsSessionStorageAdapter } from "./infrastructure/fs-session-storage.adapter.js";
-import { CliProcessLauncherAdapter } from "./infrastructure/cli-process-launcher.adapter.js";
-import { ListSessionsUseCase } from "./application/list-sessions.use-case.js";
-import { DeleteSessionUseCase } from "./application/delete-session.use-case.js";
-import { ResumeSessionUseCase } from "./application/resume-session.use-case.js";
-import { GetSessionDetailUseCase } from "./application/get-session-detail.use-case.js";
+import { ListSessionsUseCase } from "./application/use-cases/list-sessions.use-case.js";
+import { GetSessionDetailUseCase } from "./application/use-cases/get-session-detail.use-case.js";
+import { ResumeSessionUseCase } from "./application/use-cases/resume-session.use-case.js";
+import { DeleteSessionUseCase } from "./application/use-cases/delete-session.use-case.js";
+import { MultiAgentSessionRepositoryAdapter } from "./infrastructure/adapters/multi-agent-session-repository.adapter.js";
+import { CliProcessLauncherAdapter } from "./infrastructure/adapters/cli-process-launcher.adapter.js";
+import { FsSessionStorageAdapter } from "./infrastructure/adapters/fs-session-storage.adapter.js";
+import { ClaudeSessionProvider } from "./infrastructure/providers/claude/claude-session.provider.js";
+import { CursorSessionProvider } from "./infrastructure/providers/cursor/cursor-session.provider.js";
+import { GeminiSessionProvider } from "./infrastructure/providers/gemini/gemini-session.provider.js";
+import { OpenAICodexProvider } from "./infrastructure/providers/openai/openai-codex.provider.js";
 
-export interface SessionModule {
-  listSessionsUseCase: ListSessionsUseCase;
-  deleteSessionUseCase: DeleteSessionUseCase;
-  resumeSessionUseCase: ResumeSessionUseCase;
-  getSessionDetailUseCase: GetSessionDetailUseCase;
-}
+export function createSessionModule() {
+  const providers = [
+    new ClaudeSessionProvider(),
+    new CursorSessionProvider(),
+    new GeminiSessionProvider(),
+    new OpenAICodexProvider(),
+  ];
 
-export function createSessionModule(): SessionModule {
-  const sessionRepository = new FsSessionRepositoryAdapter();
-  const sessionStorage = new FsSessionStorageAdapter();
-  const processLauncher = new CliProcessLauncherAdapter();
+  const repository = new MultiAgentSessionRepositoryAdapter(providers);
+  const launcher = new CliProcessLauncherAdapter();
+  const storage = new FsSessionStorageAdapter();
 
   return {
-    listSessionsUseCase: new ListSessionsUseCase(sessionRepository),
-    deleteSessionUseCase: new DeleteSessionUseCase(sessionStorage),
-    resumeSessionUseCase: new ResumeSessionUseCase(processLauncher),
-    getSessionDetailUseCase: new GetSessionDetailUseCase(sessionRepository),
+    listSessionsUseCase: new ListSessionsUseCase(repository),
+    getSessionDetailUseCase: new GetSessionDetailUseCase(repository),
+    resumeSessionUseCase: new ResumeSessionUseCase(launcher, providers),
+    deleteSessionUseCase: new DeleteSessionUseCase(storage),
+    multiAgentRepository: repository,
   };
 }
+
+export type SessionModule = ReturnType<typeof createSessionModule>;

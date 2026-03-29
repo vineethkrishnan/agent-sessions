@@ -17,7 +17,7 @@ Enter
 Sleep 500ms
 Show
 
-Type "claude-sessions --no-splash"
+Type "agent-sessions --no-splash"
 Enter
 Sleep 3s
 

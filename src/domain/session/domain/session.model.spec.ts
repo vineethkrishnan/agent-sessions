@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Session, type SessionParams } from "./session.model.js";
 
 function makeSession(overrides: Partial<SessionParams> = {}) {
-  return new Session({
+  const params: SessionParams = {
     id: "abc-123",
     filePath: "/tmp/abc-123.jsonl",
     project: "~/projects/my-app",
@@ -11,8 +11,10 @@ function makeSession(overrides: Partial<SessionParams> = {}) {
     preview: "Fix the login bug",
     modifiedAt: new Date("2026-03-17T10:00:00Z"),
     cwd: "/Users/test/projects/my-app",
+    provider: "Claude",
     ...overrides,
-  });
+  };
+  return new Session(params);
 }
 
 describe("Session", () => {
@@ -21,6 +23,7 @@ describe("Session", () => {
     expect(session.id).toBe("abc-123");
     expect(session.project).toBe("~/projects/my-app");
     expect(session.messageCount).toBe(5);
+    expect(session.provider).toBe("Claude");
   });
 
   describe("matchesFilter", () => {
@@ -38,6 +41,10 @@ describe("Session", () => {
 
     it("matches against preview text", () => {
       expect(makeSession().matchesFilter("Fix the")).toBe(true);
+    });
+
+    it("matches against provider name", () => {
+      expect(makeSession().matchesFilter("Claude")).toBe(true);
     });
 
     it("is case-insensitive", () => {

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import React from "react";
 import { Command } from "commander";
 import { render } from "ink";
 import { createSessionModule } from "./domain/session/session.module.js";
@@ -16,19 +17,21 @@ const require = createRequire(import.meta.url);
 const pkg = require("../package.json");
 
 const program = new Command()
-  .name("claude-sessions")
+  .name("agent-sessions")
   .description(
-    "Interactive session manager for Claude Code — browse, search, delete, and resume past conversations",
+    "Interactive session manager for CLI Agents (Claude, Gemini, etc.) — browse, search, delete, and resume past conversations",
   )
   .version(pkg.version, "-v, --version")
+  .option("--agent <name>", "Specify the agent (claude, gemini, etc.)")
   .option("--fzf", "Use fzf for selection (requires fzf)", false)
   .option("--delete", "Enable delete mode", false)
   .option("--no-splash", "Skip the splash screen")
   .parse();
 
-const opts = program.opts<{ fzf: boolean; delete: boolean; splash: boolean }>();
+const opts = program.opts<{ agent?: string; fzf: boolean; delete: boolean; splash: boolean }>();
 
 const options: CliOptions = {
+  agent: opts.agent,
   fzf: opts.fzf,
   delete: opts.delete,
   noSplash: !opts.splash,
@@ -42,24 +45,31 @@ if (options.fzf) {
   render(<App module={sessionModule} options={options} version={pkg.version} />);
 }
 
-function runFzfMode(): void {
-  const sessions = sessionModule.listSessionsUseCase.execute();
+async function runFzfMode(): Promise<void> {
+  if (options.agent) {
+    sessionModule.multiAgentRepository.setActiveProvider(options.agent);
+  }
+
+  const sessions = await sessionModule.listSessionsUseCase.execute();
 
   if (sessions.length === 0) {
-    console.error("No sessions found.");
+    const agentName =
+      sessionModule.multiAgentRepository.getActiveProvider()?.name || "active agent";
+    console.error(`No sessions found for ${agentName}.`);
     process.exit(1);
   }
 
-  const lines = sessions.map((s) => {
-    const date = padRight(formatDate(s.modifiedAt), 16);
-    const project = padRight(truncate(s.project, 28), 28);
-    const branch = padRight(truncate(s.gitBranch, 20), 20);
-    const msgs = padRight(String(s.messageCount), 5);
-    const preview = truncate(s.preview, 60);
-    return `${s.id}\t${date} │ ${project} │ ${branch} │ ${msgs} │ ${preview}`;
+  const lines = sessions.map((session) => {
+    const date = padRight(formatDate(session.modifiedAt), 16);
+    const agent = padRight(truncate(session.provider, 8), 8);
+    const project = padRight(truncate(session.project, 24), 24);
+    const branch = padRight(truncate(session.gitBranch, 16), 16);
+    const messageCount = padRight(String(session.messageCount), 5);
+    const preview = truncate(session.preview, 60);
+    return `${session.id}::${session.provider}\t${date} │ ${agent} │ ${project} │ ${branch} │ ${messageCount} │ ${preview}`;
   });
 
-  const header = `${"".padEnd(37)}${padRight("Date", 16)} │ ${padRight("Project", 28)} │ ${padRight("Branch", 20)} │ ${padRight("Msgs", 5)} │ First Message`;
+  const header = `        ${padRight("Date", 16)} │ ${padRight("Agent", 8)} │ ${padRight("Project", 24)} │ ${padRight("Branch", 16)} │ ${padRight("Msgs", 5)} │ First Message`;
 
   const fzf = spawn(
     "fzf",
@@ -73,17 +83,23 @@ function runFzfMode(): void {
   fzf.stdin?.end();
 
   let output = "";
-  fzf.stdout?.on("data", (data: Buffer) => {
-    output += data.toString();
+  fzf.stdout?.on("data", (chunk: Buffer) => {
+    output += chunk.toString();
   });
 
   fzf.on("close", (code) => {
     if (code !== 0 || !output.trim()) process.exit(0);
 
-    const sessionId = output.trim().split("\t")[0];
-    if (sessionId) {
-      console.log(`Resuming session: ${sessionId}`);
-      sessionModule.resumeSessionUseCase.execute(sessionId);
+    const selection = output.trim().split("\t")[0];
+    if (selection) {
+      const separatorIndex = selection.indexOf("::");
+      if (separatorIndex === -1) return;
+      const sessionId = selection.slice(0, separatorIndex);
+      const providerName = selection.slice(separatorIndex + 2);
+      if (sessionId && providerName) {
+        console.log(`Resuming ${providerName} session: ${sessionId}`);
+        sessionModule.resumeSessionUseCase.execute(sessionId, providerName);
+      }
     }
   });
 }

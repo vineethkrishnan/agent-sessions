@@ -1,10 +1,10 @@
 {
-  "name": "@vineethnkrishnan/claude-sessions",
+  "name": "@vineethnkrishnan/agent-sessions",
   "version": "0.1.7",
-  "description": "Interactive session manager for Claude Code — browse, search, delete, and resume past conversations",
+  "description": "Interactive session manager for CLI agents (Claude, Gemini, Codex, Cursor) — browse, search, delete, and resume past conversations",
   "type": "module",
   "bin": {
-    "claude-sessions": "dist/cli.js"
+    "agent-sessions": "dist/cli.js"
   },
   "scripts": {
     "build": "tsc",
@@ -35,8 +35,12 @@
     "node": ">=20"
   },
   "keywords": [
+    "agent",
+    "agent-sessions",
     "claude",
-    "claude-code",
+    "gemini",
+    "codex",
+    "cursor",
     "cli",
     "session",
     "resume",
@@ -50,11 +54,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/vineethkrishnan/claude-sessions.git"
+    "url": "https://github.com/vineethkrishnan/agent-sessions.git"
   },
-  "homepage": "https://github.com/vineethkrishnan/claude-sessions#readme",
+  "homepage": "https://github.com/vineethkrishnan/agent-sessions#readme",
   "bugs": {
-    "url": "https://github.com/vineethkrishnan/claude-sessions/issues"
+    "url": "https://github.com/vineethkrishnan/agent-sessions/issues"
   },
   "dependencies": {
     "commander": "^13.1.0",

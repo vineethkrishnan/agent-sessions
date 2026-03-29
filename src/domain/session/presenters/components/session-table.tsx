@@ -111,12 +111,12 @@ export function SessionTable({
             [DELETE MODE]{" "}
           </Text>
         )}
-        <Text bold>Claude Code — Resume Session</Text>
+        <Text bold>Universal AI Session Manager</Text>
         <Text dimColor> ({totalCount} total)</Text>
       </Box>
 
       <Text dimColor>
-        Arrow keys: navigate Enter: resume p: preview /: search d: delete Esc: clear q: quit
+        Arrows: navigate Enter: resume p: preview /: search d: delete Esc: clear q: quit
       </Text>
 
       {isSearchMode && (
@@ -135,8 +135,9 @@ export function SessionTable({
       <Text dimColor>{"─".repeat(separatorWidth())}</Text>
       <Text dimColor>
         {"  "}
-        {padRight("Date", COLUMNS.date)} │ {padRight("Project", COLUMNS.project)} │{" "}
-        {padRight("Branch", COLUMNS.branch)} │ {padRight("Msgs", COLUMNS.msgs)} │ First Message
+        {padRight("Date", COLUMNS.date)} │ {padRight("Agent", COLUMNS.provider)} │{" "}
+        {padRight("Project", COLUMNS.project)} │ {padRight("Branch", COLUMNS.branch)} │{" "}
+        {padRight("Msgs", COLUMNS.msgs)} │ First Message
       </Text>
       <Text dimColor>{"─".repeat(separatorWidth())}</Text>
 
@@ -148,7 +149,7 @@ export function SessionTable({
           const isSelected = realIndex === clampedSelected;
           const color = isSelected ? (isDeleteMode ? "red" : "green") : undefined;
 
-          const line = `${padRight(formatDate(session.modifiedAt), COLUMNS.date)} │ ${padRight(truncate(session.project, COLUMNS.project), COLUMNS.project)} │ ${padRight(truncate(session.gitBranch, COLUMNS.branch), COLUMNS.branch)} │ ${padRight(String(session.messageCount), COLUMNS.msgs)} │ ${truncate(session.preview, COLUMNS.preview)}`;
+          const line = `${padRight(formatDate(session.modifiedAt), COLUMNS.date)} │ ${padRight(truncate(session.provider, COLUMNS.provider), COLUMNS.provider)} │ ${padRight(truncate(session.project, COLUMNS.project), COLUMNS.project)} │ ${padRight(truncate(session.gitBranch, COLUMNS.branch), COLUMNS.branch)} │ ${padRight(String(session.messageCount), COLUMNS.msgs)} │ ${truncate(session.preview, COLUMNS.preview)}`;
 
           return (
             <Box key={session.id}>

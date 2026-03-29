@@ -3,20 +3,20 @@
 ## npm (recommended)
 
 ```bash
-npm install -g @vineethnkrishnan/claude-sessions
+npm install -g @vineethnkrishnan/agent-sessions
 ```
 
 Or run without installing:
 
 ```bash
-npx @vineethnkrishnan/claude-sessions
+npx @vineethnkrishnan/agent-sessions
 ```
 
 ## From source
 
 ```bash
-git clone https://github.com/vineethkrishnan/claude-sessions.git
-cd claude-sessions
+git clone https://github.com/vineethkrishnan/agent-sessions.git
+cd agent-sessions
 npm install
 npm run build
 npm link
@@ -25,11 +25,11 @@ npm link
 ## Verify
 
 ```bash
-claude-sessions --version
+agent-sessions --version
 ```
 
 ## Prerequisites
 
 - **Node.js 20+** — [Download](https://nodejs.org/)
-- **Claude Code CLI** — Must be installed and have at least one session in `~/.claude/projects/`
+- **At least one supported AI CLI agent** — Claude Code, Gemini CLI, OpenAI Codex, or Cursor
 - **fzf** (optional) — Only needed for `--fzf` mode. [Install fzf](https://github.com/junegunn/fzf#installation)

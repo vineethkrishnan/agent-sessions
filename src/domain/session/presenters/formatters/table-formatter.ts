@@ -1,7 +1,8 @@
 export const COLUMNS = {
   date: 16,
-  project: 28,
-  branch: 20,
+  provider: 8,
+  project: 24,
+  branch: 16,
   msgs: 5,
   preview: 60,
 } as const;
@@ -26,5 +27,13 @@ export function formatDate(date: Date): string {
 }
 
 export function separatorWidth(): number {
-  return COLUMNS.date + COLUMNS.project + COLUMNS.branch + COLUMNS.msgs + COLUMNS.preview + 12;
+  return (
+    COLUMNS.date +
+    COLUMNS.provider +
+    COLUMNS.project +
+    COLUMNS.branch +
+    COLUMNS.msgs +
+    COLUMNS.preview +
+    15
+  );
 }

@@ -4,12 +4,13 @@
 
 | Key | Action |
 |-----|--------|
-| `↑` / `↓` | Navigate sessions |
+| `↑` / `↓` | Navigate sessions / providers |
 | `Page Up` / `Page Down` | Jump 10 sessions |
 | `/` | Start search / filter |
-| `Enter` | Resume selected session (or confirm search) |
+| `Enter` | Resume selected session (or confirm search / select provider) |
 | `p` | Preview session conversation |
 | `d` | Delete selected session (with confirmation) |
+| `a` | **Switch Agent** (go back to agent selector) |
 | `Esc` | Clear search filter |
 | `q` | Quit |
 

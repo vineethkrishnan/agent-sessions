@@ -35,7 +35,13 @@ describe("formatDate", () => {
 describe("separatorWidth", () => {
   it("equals sum of all columns plus separators", () => {
     const expected =
-      COLUMNS.date + COLUMNS.project + COLUMNS.branch + COLUMNS.msgs + COLUMNS.preview + 12;
+      COLUMNS.date +
+      COLUMNS.provider +
+      COLUMNS.project +
+      COLUMNS.branch +
+      COLUMNS.msgs +
+      COLUMNS.preview +
+      15;
     expect(separatorWidth()).toBe(expected);
   });
 });

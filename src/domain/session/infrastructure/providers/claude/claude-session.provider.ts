@@ -1,13 +1,17 @@
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
-import type { SessionRepositoryPort } from "../application/ports/session-repository.port.js";
-import { Session } from "../domain/session.model.js";
-import { SessionDetail } from "../domain/session-detail.model.js";
-import { parseSessionFile, parseSessionDetail } from "./jsonl-parser.js";
-import { decodeProjectPath } from "../../../common/helpers/path.helper.js";
+import type { SessionProviderPort } from "../../../application/ports/session-provider.port.js";
+import { Session } from "../../../domain/session.model.js";
+import { SessionDetail } from "../../../domain/session-detail.model.js";
+import { parseSessionFile, parseSessionDetail } from "../../parsers/jsonl-parser.js";
+import { decodeProjectPath } from "../../../../../common/helpers/path.helper.js";
 
-export class FsSessionRepositoryAdapter implements SessionRepositoryPort {
+export class ClaudeSessionProvider implements SessionProviderPort {
+  readonly name = "Claude";
+  buildResumeArgs(sessionId: string) {
+    return { command: "claude", args: ["--resume", sessionId] };
+  }
   private readonly sessionsDir: string;
 
   constructor(sessionsDir?: string) {
@@ -17,7 +21,7 @@ export class FsSessionRepositoryAdapter implements SessionRepositoryPort {
       path.join(os.homedir(), ".claude", "projects");
   }
 
-  findAll(): Session[] {
+  async findAll(): Promise<Session[]> {
     if (!fs.existsSync(this.sessionsDir)) return [];
 
     const results: { filePath: string; dirName: string; mtime: Date }[] = [];
@@ -48,8 +52,6 @@ export class FsSessionRepositoryAdapter implements SessionRepositoryPort {
       }
     }
 
-    results.sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
-
     return results.map((file) => {
       const metadata = parseSessionFile(file.filePath);
       return new Session({
@@ -61,11 +63,12 @@ export class FsSessionRepositoryAdapter implements SessionRepositoryPort {
         preview: metadata.preview,
         modifiedAt: file.mtime,
         cwd: metadata.cwd,
+        provider: this.name,
       });
     });
   }
 
-  getDetail(filePath: string): SessionDetail {
+  async getDetail(filePath: string): Promise<SessionDetail> {
     const parsed = parseSessionDetail(filePath);
     return new SessionDetail({
       messages: parsed.messages,

@@ -3,8 +3,8 @@
 ## Setup
 
 ```bash
-git clone https://github.com/vineethkrishnan/claude-sessions.git
-cd claude-sessions
+git clone https://github.com/vineethkrishnan/agent-sessions.git
+cd agent-sessions
 npm install
 npm run build
 ```

@@ -82,7 +82,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages project create claude-sessions-doc --production-branch main
+          command: pages project create agent-sessions-doc --production-branch main
         continue-on-error: true
 
       - name: Deploy to Cloudflare Pages
@@ -90,4 +90,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy docs/.vitepress/dist --project-name=claude-sessions-doc --commit-dirty=true
+          command: pages deploy docs/.vitepress/dist --project-name=agent-sessions-doc --commit-dirty=true

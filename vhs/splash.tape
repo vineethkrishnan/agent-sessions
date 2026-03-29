@@ -17,7 +17,7 @@ Enter
 Sleep 500ms
 Show
 
-Type "claude-sessions"
+Type "agent-sessions"
 Enter
 Sleep 5s
 

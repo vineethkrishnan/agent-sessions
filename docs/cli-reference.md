@@ -3,13 +3,14 @@
 ## Synopsis
 
 ```
-claude-sessions [options]
+agent-sessions [options]
 ```
 
 ## Options
 
 | Flag | Description | Default |
 |------|-------------|---------|
+| `--agent <name>` | Specify the AI agent (`claude`, `gemini`, `codex`, `cursor`) | `(selector)` |
 | `--fzf` | Use fzf for session selection | `false` |
 | `--delete` | Enable delete mode | `false` |
 | `--no-splash` | Skip the splash screen animation | `false` |
@@ -19,17 +20,20 @@ claude-sessions [options]
 ## Examples
 
 ```bash
-# Launch interactive TUI
-claude-sessions
+# Launch interactive TUI (shows Agent Selector)
+agent-sessions
 
-# Use fzf picker
-claude-sessions --fzf
+# Launch directly for Gemini
+agent-sessions --agent gemini
 
-# Enable deletion with no splash
-claude-sessions --delete --no-splash
+# Use fzf picker for Cursor
+agent-sessions --agent cursor --fzf
+
+# Enable deletion with no splash for Claude
+agent-sessions --agent claude --delete --no-splash
 
 # Check version
-claude-sessions --version
+agent-sessions --version
 ```
 
 ## Exit Codes
@@ -37,4 +41,4 @@ claude-sessions --version
 | Code | Meaning |
 |------|---------|
 | `0` | Normal exit or session resumed |
-| `1` | No sessions found |
+| `1` | No sessions found for selected agent |

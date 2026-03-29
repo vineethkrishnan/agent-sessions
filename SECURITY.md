@@ -8,11 +8,11 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in claude-sessions, please report it responsibly.
+If you discover a security vulnerability in agent-sessions, please report it responsibly.
 
 **Do NOT open a public issue.**
 
-Instead, please use [GitHub Security Advisories](https://github.com/vineethkrishnan/claude-sessions/security/advisories/new) to report the vulnerability privately.
+Instead, please use [GitHub Security Advisories](https://github.com/vineethkrishnan/agent-sessions/security/advisories/new) to report the vulnerability privately.
 
 You should receive an acknowledgement within 48 hours. We will work with you to understand the issue and coordinate a fix before any public disclosure.
 

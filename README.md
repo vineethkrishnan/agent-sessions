@@ -1,10 +1,10 @@
-# claude-sessions
+# agent-sessions
 
-[![npm](https://img.shields.io/npm/v/@vineethnkrishnan/claude-sessions)](https://www.npmjs.com/package/@vineethnkrishnan/claude-sessions)
-[![CI](https://github.com/vineethkrishnan/claude-sessions/actions/workflows/ci.yml/badge.svg)](https://github.com/vineethkrishnan/claude-sessions/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@vineethnkrishnan/agent-sessions)](https://www.npmjs.com/package/@vineethnkrishnan/agent-sessions)
+[![CI](https://github.com/vineethkrishnan/agent-sessions/actions/workflows/ci.yml/badge.svg)](https://github.com/vineethkrishnan/agent-sessions/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**[Documentation](https://claude-sessions.vineethnk.in/)** · **[npm](https://www.npmjs.com/package/@vineethnkrishnan/claude-sessions)** · **[GitHub](https://github.com/vineethkrishnan/claude-sessions)**
+**[Documentation](https://agent-sessions.vineethnk.in/)** · **[npm](https://www.npmjs.com/package/@vineethnkrishnan/agent-sessions)** · **[GitHub](https://github.com/vineethkrishnan/agent-sessions)**
 
 Interactive session manager for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Browse, search, delete, and resume past conversations from your terminal.
 
@@ -26,22 +26,22 @@ Claude Code provides `--resume <session-id>` and `--continue`, but no way to bro
 ## Installation
 
 ```bash
-npm install -g @vineethnkrishnan/claude-sessions
+npm install -g @vineethnkrishnan/agent-sessions
 ```
 
 Or run without installing:
 
 ```bash
-npx @vineethnkrishnan/claude-sessions
+npx @vineethnkrishnan/agent-sessions
 ```
 
 ## Usage
 
 ```bash
-claude-sessions              # Interactive TUI
-claude-sessions --fzf        # Use fzf for selection
-claude-sessions --delete     # Delete mode
-claude-sessions --no-splash  # Skip splash screen
+agent-sessions              # Interactive TUI
+agent-sessions --fzf        # Use fzf for selection
+agent-sessions --delete     # Delete mode
+agent-sessions --no-splash  # Skip splash screen
 ```
 
 ## Keybindings
@@ -97,8 +97,8 @@ Tests are co-located with source files (`*.spec.ts`).
 ## Development
 
 ```bash
-git clone https://github.com/vineethkrishnan/claude-sessions.git
-cd claude-sessions
+git clone https://github.com/vineethkrishnan/agent-sessions.git
+cd agent-sessions
 npm install
 npm run build
 npm test
@@ -144,7 +144,7 @@ chore: update dependencies
 
 ## Documentation
 
-Full documentation is available at **[claude-sessions.vineethnk.in](https://claude-sessions.vineethnk.in/)**.
+Full documentation is available at **[agent-sessions.vineethnk.in](https://agent-sessions.vineethnk.in/)**.
 
 ## License
 

@@ -3,17 +3,35 @@
 ## Quick Start
 
 ```bash
-claude-sessions
+agent-sessions
 ```
 
-This launches the interactive TUI showing all your Claude Code sessions.
+This launches the **Agent Selector** by default, allowing you to choose between Claude, Gemini, OpenAI Codex, and Cursor.
 
 ## Modes
 
-### Interactive TUI (default)
+### Agent Selector (default)
 
 ```bash
-claude-sessions
+agent-sessions
+```
+
+If launched without a specific agent, you'll be prompted to select one. Use ↑/↓ and `Enter` to confirm. 
+
+**Pro-tip:** Press `a` while browsing sessions to go back to this selector at any time.
+
+### Specific Agent
+
+```bash
+agent-sessions --agent <name>
+```
+
+Skip the selector and go straight to sessions for a specific agent (e.g., `claude`, `gemini`, `codex`, `cursor`).
+
+### Interactive TUI
+
+```bash
+agent-sessions
 ```
 
 ![splash](./assets/splash.gif)
@@ -23,15 +41,15 @@ Browse sessions in a full-screen table. Use arrow keys to navigate, `/` to searc
 ### fzf Mode
 
 ```bash
-claude-sessions --fzf
+agent-sessions --fzf
 ```
 
-Pipes session data to fzf for selection. Useful if you prefer fzf's fuzzy matching.
+Pipes session data for the selected agent to fzf for selection. Useful if you prefer fzf's fuzzy matching.
 
 ### Delete Mode
 
 ```bash
-claude-sessions --delete
+agent-sessions --delete
 ```
 
 Enables the delete key (`d`) to remove sessions. A confirmation dialog prevents accidental deletions.
@@ -39,15 +57,15 @@ Enables the delete key (`d`) to remove sessions. A confirmation dialog prevents 
 ### Skip Splash Screen
 
 ```bash
-claude-sessions --no-splash
+agent-sessions --no-splash
 ```
 
-Skips the animated splash screen and goes straight to the session table.
+Skips the animated splash screen and goes straight to the agent selector or session table.
 
 ## Combining Flags
 
 ```bash
-claude-sessions --delete --no-splash
+agent-sessions --agent gemini --delete --no-splash
 ```
 
 All flags can be combined freely.

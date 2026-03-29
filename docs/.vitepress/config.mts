@@ -1,9 +1,9 @@
 import { defineConfig } from 'vitepress';
 
 export default defineConfig({
-  title: 'claude-sessions',
+  title: 'agent-sessions',
   description:
-    'Interactive session manager for Claude Code — browse, search, delete, and resume past conversations from your terminal.',
+    'Interactive session manager for CLI agents (Claude, Gemini, Codex, Cursor) — browse, search, delete, and resume past conversations from your terminal.',
 
   head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }]],
 
@@ -19,10 +19,10 @@ export default defineConfig({
       {
         text: 'Links',
         items: [
-          { text: 'GitHub', link: 'https://github.com/vineethkrishnan/claude-sessions' },
-          { text: 'Changelog', link: 'https://github.com/vineethkrishnan/claude-sessions/releases' },
-          { text: 'npm', link: 'https://www.npmjs.com/package/claude-sessions' },
-          { text: 'Report an Issue', link: 'https://github.com/vineethkrishnan/claude-sessions/issues/new' },
+          { text: 'GitHub', link: 'https://github.com/vineethkrishnan/agent-sessions' },
+          { text: 'Changelog', link: 'https://github.com/vineethkrishnan/agent-sessions/releases' },
+          { text: 'npm', link: 'https://www.npmjs.com/package/agent-sessions' },
+          { text: 'Report an Issue', link: 'https://github.com/vineethkrishnan/agent-sessions/issues/new' },
         ],
       },
     ],
@@ -61,17 +61,17 @@ export default defineConfig({
       {
         text: 'Help',
         items: [
-          { text: 'Report an Issue', link: 'https://github.com/vineethkrishnan/claude-sessions/issues/new' },
+          { text: 'Report an Issue', link: 'https://github.com/vineethkrishnan/agent-sessions/issues/new' },
         ],
       },
     ],
 
-    socialLinks: [{ icon: 'github', link: 'https://github.com/vineethkrishnan/claude-sessions' }],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/vineethkrishnan/agent-sessions' }],
 
     search: { provider: 'local' },
 
     editLink: {
-      pattern: 'https://github.com/vineethkrishnan/claude-sessions/edit/main/docs/:path',
+      pattern: 'https://github.com/vineethkrishnan/agent-sessions/edit/main/docs/:path',
       text: 'Edit this page on GitHub',
     },
 

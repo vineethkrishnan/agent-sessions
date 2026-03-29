@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import type { SessionMessage } from "../domain/session-detail.model.js";
+import type { SessionMessage } from "../../domain/session-detail.model.js";
 
 export interface ParsedSessionMetadata {
   preview: string;
@@ -30,7 +30,7 @@ export function extractMessageText(data: Record<string, unknown>): string {
   return "";
 }
 
-function readLines(filePath: string): string[] {
+export function readLines(filePath: string): string[] {
   let content: string;
   try {
     content = fs.readFileSync(filePath, "utf-8");
@@ -38,6 +38,21 @@ function readLines(filePath: string): string[] {
     return [];
   }
   return content.split("\n").filter((line) => line.trim());
+}
+
+export function stringifyContent(content: unknown): string {
+  if (typeof content === "string") return content;
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => (typeof part === "string" ? part : part.text || JSON.stringify(part)))
+      .join("\n");
+  }
+  if (!content) return "";
+  try {
+    return JSON.stringify(content);
+  } catch {
+    return String(content);
+  }
 }
 
 export function parseSessionFile(filePath: string): ParsedSessionMetadata {
@@ -54,19 +69,19 @@ export function parseSessionFile(filePath: string): ParsedSessionMetadata {
 
   for (const line of lines) {
     try {
-      const data = JSON.parse(line);
+      const entry = JSON.parse(line);
 
-      if (data.type === "user") {
+      if (entry.type === "user") {
         userCount++;
         if (userCount === 1) {
-          const text = extractMessageText(data).replace(/\s+/g, " ").trim().slice(0, 80);
+          const text = extractMessageText(entry).replace(/\s+/g, " ").trim().slice(0, 80);
           if (text && !text.startsWith("<")) {
             preview = text;
           }
-          gitBranch = data.gitBranch ?? "";
-          cwd = data.cwd ?? "";
+          gitBranch = entry.gitBranch ?? "";
+          cwd = entry.cwd ?? "";
         }
-      } else if (data.type === "assistant") {
+      } else if (entry.type === "assistant") {
         assistantCount++;
       }
     } catch {
@@ -100,20 +115,20 @@ export function parseSessionDetail(
 
   for (const line of lines) {
     try {
-      const data = JSON.parse(line);
+      const entry = JSON.parse(line);
 
-      if (data.type === "user" || data.type === "assistant") {
+      if (entry.type === "user" || entry.type === "assistant") {
         totalMessages++;
 
-        if (data.type === "user" && !gitBranch) {
-          gitBranch = data.gitBranch ?? "";
-          cwd = data.cwd ?? "";
+        if (entry.type === "user" && !gitBranch) {
+          gitBranch = entry.gitBranch ?? "";
+          cwd = entry.cwd ?? "";
         }
 
         if (messages.length < maxMessages) {
-          const content = extractMessageText(data).trim();
+          const content = extractMessageText(entry).trim();
           if (content) {
-            messages.push({ role: data.type, content });
+            messages.push({ role: entry.type, content });
           }
         }
       }

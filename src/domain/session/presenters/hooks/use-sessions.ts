@@ -1,16 +1,18 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import type { Session } from "../../domain/session.model.js";
 import type { SessionDetail } from "../../domain/session-detail.model.js";
-import type { ListSessionsUseCase } from "../../application/list-sessions.use-case.js";
-import type { DeleteSessionUseCase } from "../../application/delete-session.use-case.js";
-import type { ResumeSessionUseCase } from "../../application/resume-session.use-case.js";
-import type { GetSessionDetailUseCase } from "../../application/get-session-detail.use-case.js";
+import type { ListSessionsUseCase } from "../../application/use-cases/list-sessions.use-case.js";
+import type { DeleteSessionUseCase } from "../../application/use-cases/delete-session.use-case.js";
+import type { ResumeSessionUseCase } from "../../application/use-cases/resume-session.use-case.js";
+import type { GetSessionDetailUseCase } from "../../application/use-cases/get-session-detail.use-case.js";
+import type { ProviderManagementPort } from "../../application/ports/provider-management.port.js";
 
 interface UseSessionsOptions {
   listUseCase: ListSessionsUseCase;
   deleteUseCase: DeleteSessionUseCase;
   resumeUseCase: ResumeSessionUseCase;
   getDetailUseCase: GetSessionDetailUseCase;
+  repository: ProviderManagementPort;
 }
 
 export function useSessions({
@@ -18,44 +20,67 @@ export function useSessions({
   deleteUseCase,
   resumeUseCase,
   getDetailUseCase,
+  repository,
 }: UseSessionsOptions) {
   const [allSessions, setAllSessions] = useState<Session[]>([]);
   const [filter, setFilter] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [previewSession, setPreviewSession] = useState<Session | null>(null);
   const [previewDetail, setPreviewDetail] = useState<SessionDetail | null>(null);
+  const [activeProvider, setActiveProvider] = useState<{ id: string; name: string } | null>(
+    repository.getActiveProvider(),
+  );
+
+  const refreshSessions = useCallback(async () => {
+    setIsLoaded(false);
+    try {
+      const sessions = await listUseCase.execute();
+      setAllSessions(sessions);
+    } catch (error) {
+      console.error("Failed to load sessions:", error);
+      setAllSessions([]);
+    } finally {
+      setIsLoaded(true);
+    }
+  }, [listUseCase]);
 
   useEffect(() => {
-    const sessions = listUseCase.execute();
-    setAllSessions(sessions);
-    setIsLoaded(true);
-  }, []);
+    refreshSessions();
+  }, [refreshSessions, activeProvider]);
 
   const filtered = useMemo(
-    () => (filter ? allSessions.filter((s) => s.matchesFilter(filter)) : allSessions),
+    () => (filter ? allSessions.filter((session) => session.matchesFilter(filter)) : allSessions),
     [allSessions, filter],
   );
 
   const deleteSession = useCallback(
-    (session: Session) => {
-      deleteUseCase.execute(session);
-      setAllSessions((prev) => prev.filter((s) => s.id !== session.id));
+    async (session: Session) => {
+      try {
+        await deleteUseCase.execute(session.filePath);
+        setAllSessions((prev) => prev.filter((existing) => existing.id !== session.id));
+      } catch (error) {
+        console.error("Failed to delete session:", error);
+      }
     },
     [deleteUseCase],
   );
 
   const resumeSession = useCallback(
     (session: Session) => {
-      resumeUseCase.execute(session.id);
+      resumeUseCase.execute(session.id, session.provider);
     },
     [resumeUseCase],
   );
 
   const openPreview = useCallback(
-    (session: Session) => {
-      const detail = getDetailUseCase.execute(session);
-      setPreviewSession(session);
-      setPreviewDetail(detail);
+    async (session: Session) => {
+      try {
+        const detail = await getDetailUseCase.execute(session.filePath, session.provider);
+        setPreviewSession(session);
+        setPreviewDetail(detail);
+      } catch (error) {
+        console.error("Failed to get session detail:", error);
+      }
     },
     [getDetailUseCase],
   );
@@ -64,6 +89,19 @@ export function useSessions({
     setPreviewSession(null);
     setPreviewDetail(null);
   }, []);
+
+  const switchProvider = useCallback(
+    (providerId: string | null) => {
+      repository.setActiveProvider(providerId);
+      setActiveProvider(repository.getActiveProvider());
+      setFilter("");
+      setPreviewSession(null);
+      setPreviewDetail(null);
+    },
+    [repository],
+  );
+
+  const providers = useMemo(() => repository.getProviders(), [repository]);
 
   return {
     allSessions,
@@ -78,5 +116,8 @@ export function useSessions({
     previewDetail,
     isLoaded,
     totalCount: allSessions.length,
+    activeProvider,
+    providers,
+    switchProvider,
   };
 }

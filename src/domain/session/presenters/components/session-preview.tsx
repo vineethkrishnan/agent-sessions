@@ -3,6 +3,7 @@ import { Text, Box, useInput } from "ink";
 import type { Session } from "../../domain/session.model.js";
 import type { SessionDetail } from "../../domain/session-detail.model.js";
 import { formatDate, separatorWidth } from "../formatters/table-formatter.js";
+import { stringifyContent } from "../../infrastructure/parsers/jsonl-parser.js";
 
 interface SessionPreviewProps {
   session: Session;
@@ -32,8 +33,9 @@ function wrapText(text: string, width: number): string[] {
   return lines;
 }
 
-function formatMessageContent(content: string, width: number, maxLines: number): string[] {
-  const cleaned = content.replace(/\s+/g, " ").trim();
+function formatMessageContent(content: unknown, width: number, maxLines: number): string[] {
+  const text = stringifyContent(content);
+  const cleaned = text.replace(/\s+/g, " ").trim();
   const wrapped = wrapText(cleaned, width);
 
   if (wrapped.length <= maxLines) return wrapped;
@@ -51,7 +53,10 @@ export function SessionPreview({ session, detail, onClose, onResume }: SessionPr
     }));
   }, [detail.messages, contentWidth]);
 
-  const totalContentLines = renderedMessages.reduce((sum, m) => sum + m.lines.length + 2, 0);
+  const totalContentLines = renderedMessages.reduce(
+    (totalLines, renderedMessage) => totalLines + renderedMessage.lines.length + 2,
+    0,
+  );
   const [scrollOffset, setScrollOffset] = useState(0);
   const maxScroll = Math.max(0, totalContentLines - maxVisible);
 
@@ -95,6 +100,12 @@ export function SessionPreview({ session, detail, onClose, onResume }: SessionPr
       {/* Session metadata header */}
       <Box flexDirection="column" paddingLeft={1}>
         <Text>
+          <Text dimColor>Agent: </Text>
+          <Text bold color="yellow">
+            {session.provider}
+          </Text>
+        </Text>
+        <Text>
           <Text dimColor>Session: </Text>
           <Text bold>{session.id}</Text>
         </Text>
@@ -133,7 +144,7 @@ export function SessionPreview({ session, detail, onClose, onResume }: SessionPr
         {visibleLines.map((line, i) => {
           if (line.isLabel) {
             const color = line.role === "user" ? "green" : "magenta";
-            const label = line.role === "user" ? "You" : "Claude";
+            const label = line.role === "user" ? "You" : session.provider;
             return (
               <Text key={i} color={color} bold>
                 {label}:

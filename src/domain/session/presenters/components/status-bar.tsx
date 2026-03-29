@@ -17,7 +17,7 @@ export function StatusBar({ start, end, total }: StatusBarProps) {
         </Text>
       )}
       <Box paddingTop={1}>
-        <Text dimColor>{"  "}github.com/vineethkrishnan/claude-sessions</Text>
+        <Text dimColor>{"  "}github.com/vineethkrishnan/agent-sessions</Text>
       </Box>
     </Box>
   );

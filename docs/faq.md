@@ -14,7 +14,7 @@ The tool reads session files directly from disk, so it works without Claude Code
 
 ## Does this modify my sessions?
 
-**No.** claude-sessions only reads session files. The only destructive operation is the explicit "delete" feature, which removes the `.jsonl` file and its companion directory after confirmation.
+**No.** agent-sessions only reads session files. The only destructive operation is the explicit "delete" feature, which removes the `.jsonl` file and its companion directory after confirmation.
 
 ## What platforms are supported?
 
@@ -23,13 +23,13 @@ macOS and Linux. Windows is not currently supported due to path handling differe
 ## How do I update?
 
 ```bash
-npm update -g @vineethnkrishnan/claude-sessions
+npm update -g @vineethnkrishnan/agent-sessions
 ```
 
 ## How do I uninstall?
 
 ```bash
-npm uninstall -g @vineethnkrishnan/claude-sessions
+npm uninstall -g @vineethnkrishnan/agent-sessions
 ```
 
 ## The splash screen is too slow
@@ -37,7 +37,7 @@ npm uninstall -g @vineethnkrishnan/claude-sessions
 Use `--no-splash` to skip it:
 
 ```bash
-claude-sessions --no-splash
+agent-sessions --no-splash
 ```
 
 ## fzf mode doesn't work

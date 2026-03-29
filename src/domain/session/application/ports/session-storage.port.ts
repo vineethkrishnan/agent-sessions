@@ -1,3 +1,3 @@
 export interface SessionStoragePort {
-  delete(filePath: string): void;
+  delete(filePath: string): Promise<void>;
 }

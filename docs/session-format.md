@@ -27,7 +27,7 @@ Each line in a `.jsonl` file is a JSON object representing a message:
 {"type": "assistant", "message": {"content": "I'll look at the auth module..."}}
 ```
 
-## What claude-sessions Extracts
+## What agent-sessions Extracts
 
 ### Session List
 

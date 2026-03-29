@@ -1,93 +1,121 @@
 # Architecture
 
-claude-sessions follows a **vertical-slice hexagonal architecture** with clean separation of concerns.
+**agent-sessions** follows a **vertical-slice hexagonal architecture** with a **provider-based system** for multi-agent support.
 
 ## Layer Diagram
 
 ```
-┌──────────────────────────────────────────────────┐
-│  Presenters (Ink/React)                          │
-│  ├── App, SessionTable, SessionPreview, Splash   │
-│  ├── Hooks (useSessions)                         │
-│  └── Formatters                                  │
-├──────────────────────────────────────────────────┤
-│  Application (Use Cases)                         │
-│  ├── ListSessionsUseCase                         │
-│  ├── GetSessionDetailUseCase                     │
-│  ├── DeleteSessionUseCase                        │
-│  └── ResumeSessionUseCase                        │
-├──────────────────────────────────────────────────┤
-│  Domain (Pure Business Logic)                    │
-│  ├── Session entity                              │
-│  ├── SessionDetail + SessionMessage              │
-│  ├── Session errors                              │
-│  └── matchesFilter logic                         │
-├──────────────────────────────────────────────────┤
-│  Infrastructure (Adapters)                       │
-│  ├── FsSessionRepositoryAdapter                  │
-│  ├── FsSessionStorageAdapter                     │
-│  ├── CliProcessLauncherAdapter                   │
-│  └── JSONL parser                                │
-└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│  Presenters (Ink/React)                                  │
+│  ├── App, AgentSelector, SessionTable, SessionPreview    │
+│  ├── Hooks (useSessions)                                 │
+│  └── Formatters                                          │
+├──────────────────────────────────────────────────────────┤
+│  Application (Use Cases)                                 │
+│  ├── ListSessionsUseCase                                 │
+│  ├── GetSessionDetailUseCase                             │
+│  ├── DeleteSessionUseCase                                │
+│  └── ResumeSessionUseCase                                │
+├──────────────────────────────────────────────────────────┤
+│  Infrastructure (Providers & Adapters)                   │
+│  ├── MultiAgentSessionRepository (Registry)              │
+│  ├── ClaudeSessionProvider                               │
+│  ├── GeminiSessionProvider                               │
+│  ├── OpenAICodexProvider                                 │
+│  ├── CursorSessionProvider                               │
+│  ├── FsSessionStorageAdapter                             │
+│  └── JSONL / SQLite parser                               │
+├──────────────────────────────────────────────────────────┤
+│  Domain (Pure Business Logic)                            │
+│  ├── Session entity                                      │
+│  ├── SessionDetail + SessionMessage                      │
+│  └── matchesFilter logic                                 │
+└──────────────────────────────────────────────────────────┘
 ```
 
-## Dependency Flow
+## Multi-Agent Provider System
 
-```
-presenters → application → domain ← infrastructure
-```
+The core of the multi-agent support is the `SessionProvider` interface:
 
-- **Domain** has zero external dependencies
-- **Application** depends only on domain types and port interfaces
-- **Infrastructure** implements port interfaces defined by the application layer
-- **Presenters** consume use cases via the module wiring
+![SessionProvider Interface](./assets/code/session-provider.png)
+
+The `MultiAgentSessionRepository` acts as a registry for these providers.
+
+![Multi-Agent Repository](./assets/code/multi-agent-repo.png)
+
+When an agent is selected in the UI, the repository sets the corresponding provider as "active," and all subsequent use case calls are delegated to that provider.
+
+### Example: Cursor Session Provider
+
+Cursor reads JSONL session files from `~/.cursor-agent/sessions/`.
+
+![Cursor Provider](./assets/code/cursor-provider.png)
 
 ## Directory Structure
 
 ```
 src/
-├── domain/session/              # Session domain module
-│   ├── domain/                  # Pure business logic (zero deps)
-│   │   ├── session.model.ts     # Session entity + filtering
+├── domain/session/                  # Session domain module
+│   ├── domain/                      # Pure business logic
+│   │   ├── session.model.ts         # Session entity + filtering
 │   │   ├── session-detail.model.ts  # Conversation detail model
-│   │   └── session.error.ts     # Domain errors
-│   ├── application/             # Use cases + ports
-│   │   ├── ports/               # Interface contracts
-│   │   ├── list-sessions.use-case.ts
-│   │   ├── delete-session.use-case.ts
-│   │   ├── resume-session.use-case.ts
-│   │   └── get-session-detail.use-case.ts
-│   ├── infrastructure/          # Adapters (fs, spawn)
-│   │   ├── fs-session-repository.adapter.ts
-│   │   ├── fs-session-storage.adapter.ts
-│   │   ├── cli-process-launcher.adapter.ts
-│   │   └── jsonl-parser.ts
-│   ├── presenters/              # UI layer (Ink/React)
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── formatters/
-│   │   └── app.tsx
-│   └── session.module.ts        # Module wiring (DI)
-├── common/helpers/              # Cross-domain utilities
-│   └── path.helper.ts
-└── cli.tsx                      # Entry point
+│   │   └── session.error.ts         # Domain errors
+│   ├── application/                 # Use cases + ports
+│   │   ├── ports/                   # Interface contracts
+│   │   │   ├── session-provider.port.ts
+│   │   │   ├── session-repository.port.ts
+│   │   │   ├── session-storage.port.ts
+│   │   │   ├── process-launcher.port.ts
+│   │   │   └── provider-management.port.ts
+│   │   └── use-cases/
+│   │       ├── list-sessions.use-case.ts
+│   │       ├── get-session-detail.use-case.ts
+│   │       ├── delete-session.use-case.ts
+│   │       └── resume-session.use-case.ts
+│   ├── infrastructure/
+│   │   ├── adapters/                # Generic adapters
+│   │   │   ├── multi-agent-session-repository.adapter.ts
+│   │   │   ├── fs-session-storage.adapter.ts
+│   │   │   └── cli-process-launcher.adapter.ts
+│   │   ├── providers/               # One folder per agent
+│   │   │   ├── claude/
+│   │   │   ├── cursor/
+│   │   │   ├── gemini/
+│   │   │   └── openai/
+│   │   └── parsers/
+│   │       └── jsonl-parser.ts
+│   ├── presenters/                  # UI layer (Ink/React)
+│   │   ├── components/              # AgentSelector, Table, etc.
+│   │   ├── hooks/                   # useSessions
+│   │   └── formatters/              # Table formatting
+│   └── session.module.ts            # Module wiring (DI)
+├── common/helpers/                  # Cross-domain utilities
+└── cli.tsx                          # Entry point
 ```
 
 ## Module Wiring
 
-`session.module.ts` acts as a dependency injection container, wiring adapters to use cases:
+`session.module.ts` initializes the repository and registers all providers:
 
 ```ts
-export function createSessionModule(): SessionModule {
-  const repository = new FsSessionRepositoryAdapter();
-  const storage = new FsSessionStorageAdapter();
+export function createSessionModule() {
+  const providers = [
+    new ClaudeSessionProvider(),
+    new CursorSessionProvider(),
+    new GeminiSessionProvider(),
+    new OpenAICodexProvider(),
+  ];
+
+  const repository = new MultiAgentSessionRepositoryAdapter(providers);
   const launcher = new CliProcessLauncherAdapter();
+  const storage = new FsSessionStorageAdapter();
 
   return {
     listSessionsUseCase: new ListSessionsUseCase(repository),
-    deleteSessionUseCase: new DeleteSessionUseCase(storage),
-    resumeSessionUseCase: new ResumeSessionUseCase(launcher),
     getSessionDetailUseCase: new GetSessionDetailUseCase(repository),
+    resumeSessionUseCase: new ResumeSessionUseCase(launcher, providers),
+    deleteSessionUseCase: new DeleteSessionUseCase(storage),
+    multiAgentRepository: repository,
   };
 }
 ```

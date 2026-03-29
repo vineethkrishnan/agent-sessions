@@ -7,6 +7,7 @@ export interface SessionParams {
   readonly preview: string;
   readonly modifiedAt: Date;
   readonly cwd: string;
+  readonly provider: string;
 }
 
 export class Session {
@@ -18,6 +19,7 @@ export class Session {
   readonly preview: string;
   readonly modifiedAt: Date;
   readonly cwd: string;
+  readonly provider: string;
 
   constructor(params: SessionParams) {
     this.id = params.id;
@@ -28,13 +30,14 @@ export class Session {
     this.preview = params.preview;
     this.modifiedAt = params.modifiedAt;
     this.cwd = params.cwd;
+    this.provider = params.provider;
   }
 
   matchesFilter(query: string): boolean {
     if (!query) return true;
     const lower = query.toLowerCase();
     const searchable =
-      `${this.project} ${this.gitBranch} ${this.preview} ${this.cwd}`.toLowerCase();
+      `${this.provider} ${this.project} ${this.gitBranch} ${this.preview} ${this.cwd}`.toLowerCase();
     return searchable.includes(lower);
   }
 }

@@ -1,0 +1,4 @@
+{"type":"user","message":{"content":"Unicode test: こんにちは世界 🌍 مرحبا بالعالم Привет мир"},"gitBranch":"feat/i18n","cwd":"/Users/test/myproject"}
+{"type":"assistant","message":{"content":"I see you're testing Unicode support with Japanese (こんにちは世界), Arabic (مرحبا), and Russian (Привет мир)."}}
+{"type":"user","message":{"content":"Now test very long content: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."}}
+{"type":"assistant","message":{"content":"That's a long message. The preview should be truncated at 80 characters."}}

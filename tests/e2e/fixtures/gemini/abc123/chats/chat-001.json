@@ -1,0 +1,11 @@
+{
+  "project": "my-gemini-project",
+  "gitBranch": "feat/api",
+  "cwd": "/Users/test/gemini-app",
+  "messages": [
+    { "role": "user", "content": "Help me build a REST API" },
+    { "role": "assistant", "content": "I'll help you build a REST API. Let's start with the route definitions." },
+    { "role": "user", "content": "Use Express.js please" },
+    { "role": "assistant", "content": "Sure, here's the Express.js setup with proper middleware." }
+  ]
+}

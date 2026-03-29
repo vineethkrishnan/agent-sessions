@@ -1,0 +1,4 @@
+{"type":"user","message":{"content":"Add dark mode to the settings page"}}
+{"type":"assistant","message":{"content":"I'll add dark mode support. Let me update the theme provider first."}}
+{"type":"user","message":{"content":"Use CSS variables for the theme colors"}}
+{"type":"assistant","message":{"content":"Great approach. Here are the CSS variables for both light and dark themes."}}

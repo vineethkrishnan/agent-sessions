@@ -1,0 +1,2 @@
+{"type":"user","message":{"content":"Refactor the database layer to use connection pooling"},"gitBranch":"refactor/db-pool","cwd":"/Users/test/myproject"}
+{"type":"assistant","message":{"content":"I'll refactor the database layer. Let me start by reviewing the current connection management."}}

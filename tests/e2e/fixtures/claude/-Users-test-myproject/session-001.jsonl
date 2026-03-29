@@ -1,0 +1,6 @@
+{"type":"user","message":{"content":"Hello, help me fix the login bug"},"gitBranch":"fix/login-bug","cwd":"/Users/test/myproject"}
+{"type":"assistant","message":{"content":"I'll help you fix the login bug. Let me look at the authentication module."}}
+{"type":"user","message":{"content":"The issue is in the JWT validation"}}
+{"type":"assistant","message":{"content":"I see the problem. The token expiry check is using seconds instead of milliseconds."}}
+{"type":"user","message":{"content":"Can you also add a refresh token?"}}
+{"type":"assistant","message":{"content":"Sure, I'll implement a refresh token mechanism using rotating tokens."}}

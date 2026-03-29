@@ -1,0 +1,5 @@
+{"type":"user","message":{"content":"Valid first message"},"gitBranch":"main","cwd":"/tmp"}
+{this is not valid json at all!!!
+{"type":"assistant","message":{"content":"Valid response after corrupt line"}}
+another garbage line without braces
+{"type":"user","message":{"content":"Second valid user message"}}

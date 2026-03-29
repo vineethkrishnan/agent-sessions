@@ -1,0 +1,3 @@
+{"type":"user","message":{"content":"<system>System prompt that starts with angle bracket</system>"},"gitBranch":"main","cwd":"/tmp"}
+{"type":"assistant","message":{"content":[{"type":"tool_use","name":"read_file","input":{"path":"/tmp/foo.ts"}},{"type":"text","text":"Let me read that file for you."}]}}
+{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"123","content":"file contents here"},{"type":"text","text":"Here is the file"}]}}

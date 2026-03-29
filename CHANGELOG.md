@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.8](https://github.com/vineethkrishnan/agent-sessions/compare/v0.1.7...v0.1.8) (2026-03-29)
+
+
+### Features
+
+* **session:** add multi-agent support with provider-based architecture ([#19](https://github.com/vineethkrishnan/agent-sessions/issues/19)) ([d7108da](https://github.com/vineethkrishnan/agent-sessions/commit/d7108da857748468f0cb31b4503ef72032a669cb))
+
 ## [0.1.7](https://github.com/vineethkrishnan/claude-sessions/compare/v0.1.6...v0.1.7) (2026-03-22)
 
 

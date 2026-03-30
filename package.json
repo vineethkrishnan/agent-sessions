@@ -63,16 +63,16 @@
     "url": "https://github.com/vineethkrishnan/agent-sessions/issues"
   },
   "dependencies": {
-    "commander": "^13.1.0",
-    "ink": "^5.2.0",
-    "react": "^18.3.1"
+    "commander": "^14.0.3",
+    "ink": "^6.8.0",
+    "react": "^19.2.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
     "@eslint/js": "^10.0.1",
-    "@types/node": "^22.15.2",
-    "@types/react": "^18.3.20",
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
     "@vitest/coverage-v8": "^4.1.0",
     "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.8",
@@ -83,7 +83,7 @@
     "node-pty": "^1.2.0-beta.12",
     "prettier": "^3.8.1",
     "strip-ansi": "^7.2.0",
-    "typescript": "^5.8.3",
+    "typescript": "^6.0.2",
     "typescript-eslint": "^8.57.1",
     "vitepress": "^1.6.4",
     "vitest": "^4.1.0"

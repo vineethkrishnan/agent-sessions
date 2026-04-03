@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.11](https://github.com/vineethkrishnan/agent-sessions/compare/v0.1.10...v0.1.11) (2026-04-03)
+
+
+### CI/CD
+
+* **deps:** bump the actions group with 5 updates ([f0496c0](https://github.com/vineethkrishnan/agent-sessions/commit/f0496c0fc79389b5b75997ae191b0b8f33499ecc))
+* **deps:** bump the actions group with 5 updates ([2047477](https://github.com/vineethkrishnan/agent-sessions/commit/20474775bfff1280645deb662455a731a1bc3f6a))
+
 ## [0.1.10](https://github.com/vineethkrishnan/agent-sessions/compare/v0.1.9...v0.1.10) (2026-03-30)
 
 

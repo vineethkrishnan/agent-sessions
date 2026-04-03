@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.12](https://github.com/vineethkrishnan/agent-sessions/compare/v0.1.11...v0.1.12) (2026-04-03)
+
+
+### Bug Fixes
+
+* **session:** fix provider bugs, cursor SQLite support, and resume cwd handling ([#30](https://github.com/vineethkrishnan/agent-sessions/issues/30)) ([bc4db5d](https://github.com/vineethkrishnan/agent-sessions/commit/bc4db5d78bcd15cde58a5c2163dbdada6b6f3950))
+
 ## [0.1.11](https://github.com/vineethkrishnan/agent-sessions/compare/v0.1.10...v0.1.11) (2026-04-03)
 
 

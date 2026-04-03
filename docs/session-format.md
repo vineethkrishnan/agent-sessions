@@ -1,12 +1,21 @@
 # Session Format
 
-## How Claude Code Stores Sessions
+## Provider Storage Overview
 
-Claude Code stores session data in `~/.claude/projects/`. Each project directory is named using an encoded path (e.g., `-Users-vineeth-projects-myapp`).
+Each AI agent stores sessions differently. agent-sessions reads each format natively.
 
-Inside each project directory, sessions are stored as `.jsonl` files named by session ID.
+| Provider | Location | Format | Metadata Extracted |
+|----------|----------|--------|-------------------|
+| **Claude** | `~/.claude/projects/<encoded-path>/` | JSONL | Project, git branch, cwd, messages |
+| **Gemini** | `~/.gemini/tmp/<hash>/chats/` | JSON | Project, git branch, cwd, messages |
+| **OpenAI Codex** | `~/.codex/sessions/` (recursive) | JSONL | Messages only |
+| **Cursor** | `~/.cursor/chats/<hash>/<uuid>/store.db` | SQLite | Session name, cwd, messages |
 
-## Directory Layout
+## Claude Code
+
+Sessions are stored in `~/.claude/projects/`. Each project directory is named using an encoded path (e.g., `-Users-vineeth-projects-myapp`).
+
+### Directory Layout
 
 ```
 ~/.claude/projects/
@@ -18,33 +27,96 @@ Inside each project directory, sessions are stored as `.jsonl` files named by se
 │   └── ...
 ```
 
-## JSONL Structure
+### JSONL Structure
 
-Each line in a `.jsonl` file is a JSON object representing a message:
+Each line is a JSON object representing a message:
 
 ```json
-{"type": "human", "message": {"content": "Fix the auth bug"}}
+{"type": "user", "message": {"content": "Fix the auth bug"}, "gitBranch": "main", "cwd": "/Users/me/myapp"}
 {"type": "assistant", "message": {"content": "I'll look at the auth module..."}}
 ```
+
+### Path Decoding
+
+The encoded directory name `-Users-vineeth-projects-myapp` is decoded to `/Users/vineeth/projects/myapp`, and the home prefix is replaced with `~` for display.
+
+## Gemini CLI
+
+Sessions are stored as JSON files inside `~/.gemini/tmp/<project-hash>/chats/`.
+
+### JSON Structure
+
+```json
+{
+  "sessionId": "session-abc",
+  "project": "my-project",
+  "cwd": "/home/user/project",
+  "gitBranch": "main",
+  "messages": [
+    { "type": "user", "content": "How do I fix this?" },
+    { "type": "gemini", "content": "Let me help..." }
+  ]
+}
+```
+
+Note: Gemini uses `type: "gemini"` for assistant messages (not `"assistant"`).
+
+## OpenAI Codex
+
+Sessions are stored as JSONL files in `~/.codex/sessions/`, scanned recursively.
+
+### JSONL Structure
+
+```json
+{"role": "user", "content": "Build a REST API"}
+{"role": "assistant", "content": "I'll create the API..."}
+```
+
+Codex uses `role` (not `type`) to identify message authors. Project and git branch metadata are not available in the session files.
+
+## Cursor
+
+Cursor stores sessions as SQLite databases at `~/.cursor/chats/<workspace-hash>/<agent-uuid>/store.db`. On Windows, the path is `%APPDATA%/Cursor/chats/`.
+
+### Database Schema
+
+**`meta` table** — Session metadata stored as hex-encoded JSON:
+
+```json
+{
+  "agentId": "3d52bc50-f05d-44fc-9bd1-2b2d3b9e4059",
+  "name": "Fix Auth Bug",
+  "createdAt": 1772175077867,
+  "lastUsedModel": "claude-4.6-opus-high-thinking"
+}
+```
+
+**`blobs` table** — Messages stored as JSON blobs:
+
+```json
+{"role": "user", "content": "Fix the login bug"}
+{"role": "assistant", "content": "I'll investigate the login flow..."}
+```
+
+The first user message typically contains Cursor's system context (`<user_info>` block with OS, workspace path, etc.). The actual user query is wrapped in `<user_query>` tags in subsequent messages. agent-sessions extracts the workspace path and strips the XML wrappers automatically.
 
 ## What agent-sessions Extracts
 
 ### Session List
 
-| Field | Source |
-|-------|--------|
-| Session ID | Filename (without `.jsonl`) |
-| Project | Decoded from parent directory name |
-| Modified At | File modification timestamp |
-| Git Branch | Extracted from session metadata |
-| Message Count | Count of human + assistant messages |
-| Preview | First human message, truncated to 80 chars |
-| Working Directory | Decoded from directory path |
+| Field | Claude | Gemini | Codex | Cursor |
+|-------|--------|--------|-------|--------|
+| Session ID | Filename | Filename | Filename | Agent UUID |
+| Project | Decoded dir name | JSON field | "Unknown" | Session name |
+| Git Branch | JSONL metadata | JSON field | — | — |
+| Working Dir | JSONL metadata | JSON field | — | Extracted from context |
+| Message Count | user + assistant | user + gemini | user + assistant | user + assistant |
+| Preview | First user message | First user message | First user message | First user query (XML-stripped) |
 
 ### Session Preview
 
-When you press `p` on a session, the tool parses the full JSONL file and extracts the first 20 user/assistant messages with their complete text content. This lets you review a conversation before resuming it.
+When you press `p` on a session, the tool parses up to 20 messages and displays the conversation with proper `You` / `<Agent>` labels.
 
-## Path Decoding
+### Resume
 
-The encoded directory name `-Users-vineeth-projects-myapp` is decoded to `/Users/vineeth/projects/myapp`, and the home prefix is replaced with `~` for display.
+When you press `Enter`, agent-sessions spawns the agent's CLI resume command from the session's original working directory, so the agent can locate its session files.

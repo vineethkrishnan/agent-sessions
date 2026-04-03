@@ -23,7 +23,7 @@ These CLI agents provide `--resume <session-id>` but no way to browse or search 
 - Agent selector — switch between agents or view all at once
 - Optional fzf integration for power users
 - Animated splash screen on startup
-- Works on macOS and Linux
+- Works on macOS, Linux, and Windows
 
 ## Installation
 
@@ -79,11 +79,14 @@ src/
 │   │   ├── delete-session.use-case.ts
 │   │   ├── resume-session.use-case.ts
 │   │   └── get-session-detail.use-case.ts
-│   ├── infrastructure/          # Adapters (fs, spawn)
-│   │   ├── fs-session-repository.adapter.ts
-│   │   ├── fs-session-storage.adapter.ts
-│   │   ├── cli-process-launcher.adapter.ts
-│   │   └── jsonl-parser.ts
+│   ├── infrastructure/          # Adapters + providers
+│   │   ├── adapters/            # Generic adapters
+│   │   ├── providers/           # One folder per agent
+│   │   │   ├── claude/          # JSONL parser
+│   │   │   ├── gemini/          # JSON parser
+│   │   │   ├── openai/          # JSONL parser
+│   │   │   └── cursor/          # SQLite reader
+│   │   └── parsers/             # Shared JSONL parser
 │   ├── presenters/              # UI layer (Ink/React)
 │   │   ├── components/
 │   │   ├── hooks/
@@ -117,10 +120,15 @@ node dist/cli.js
 | Command | Description |
 |---------|-------------|
 | `npm run build` | Compile TypeScript |
-| `npm test` | Run all tests |
+| `npm test` | Run unit tests |
+| `npm run test:e2e` | Run E2E tests |
+| `npm run test:all` | Run unit + E2E tests |
+| `npm run test:cov` | Run tests with coverage |
 | `npm run test:watch` | Run tests in watch mode |
 | `npm run lint` | Lint source files |
-| `npm run lint:fix` | Lint and auto-fix |
+| `npm run lint:dead-code` | Detect dead code (knip) |
+| `npm run lint:duplicates` | Detect code duplication |
+| `npm run analyze` | Run all quality checks |
 | `npm run format` | Format with Prettier |
 
 ### CI/CD

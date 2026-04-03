@@ -18,9 +18,9 @@ While tools like [Claude Code](https://docs.anthropic.com/en/docs/claude-code), 
 | Agent | Store | Format | Resume Command |
 |-------|-------|--------|----------------|
 | **Claude** | `~/.claude/projects/` | JSONL | `claude --resume` |
-| **Gemini** | `~/.gemini/tmp/` | JSON/JSONL | `gemini --resume` |
+| **Gemini** | `~/.gemini/tmp/` | JSON | `gemini --resume` |
 | **OpenAI Codex** | `~/.codex/sessions/` | JSONL | `codex resume` |
-| **Cursor** | `~/.cursor-agent/sessions/` | JSONL | `agent --resume` |
+| **Cursor** | `~/.cursor/chats/` | SQLite | `cursor --resume` |
 
 ## Features
 
@@ -40,6 +40,7 @@ While tools like [Claude Code](https://docs.anthropic.com/en/docs/claude-code), 
 - **TypeScript** with strict mode
 - **Ink** (React for the terminal) for the TUI
 - **Commander** for CLI argument parsing
+- **better-sqlite3** for Cursor session reading
 - **Hexagonal architecture** with a **Provider-based system** for multi-agent support
 - **Vitest** for testing
 

@@ -18,6 +18,7 @@ export interface CliOptions {
 export interface ResumeRequest {
   sessionId: string;
   providerName: string;
+  cwd: string;
 }
 
 interface AppProps {
@@ -35,7 +36,7 @@ export function App({ module, options, version, onResume }: AppProps) {
   const handleResume = useCallback(
     (session: Session) => {
       if (onResume) {
-        onResume({ sessionId: session.id, providerName: session.provider });
+        onResume({ sessionId: session.id, providerName: session.provider, cwd: session.cwd });
         exit();
       }
     },
@@ -94,10 +95,6 @@ export function App({ module, options, version, onResume }: AppProps) {
     setAgentSelectorVisible(false);
   };
 
-  if (isSplashVisible) {
-    return <SplashScreen version={version} loading={false} />;
-  }
-
   if (isAgentSelectorVisible) {
     return (
       <AgentSelector
@@ -108,8 +105,8 @@ export function App({ module, options, version, onResume }: AppProps) {
     );
   }
 
-  if (!isLoaded) {
-    return <SplashScreen version={version} loading={true} />;
+  if (isSplashVisible || !isLoaded) {
+    return <SplashScreen version={version} loading={!isSplashVisible} />;
   }
 
   if (previewSession && previewDetail) {

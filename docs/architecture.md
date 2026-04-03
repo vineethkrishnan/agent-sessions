@@ -47,7 +47,7 @@ When an agent is selected in the UI, the repository sets the corresponding provi
 
 ### Example: Cursor Session Provider
 
-Cursor reads JSONL session files from `~/.cursor-agent/sessions/`.
+Cursor stores sessions as SQLite databases at `~/.cursor/chats/<hash>/<uuid>/store.db`. The provider reads the `meta` table for session metadata (name, agent ID, model) and the `blobs` table for conversation messages. On Windows, the path falls back to `%APPDATA%/Cursor/chats/`.
 
 ![Cursor Provider](./assets/code/cursor-provider.png)
 

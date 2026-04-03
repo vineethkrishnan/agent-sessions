@@ -20,7 +20,10 @@ describe("GeminiSessionProvider", () => {
       JSON.stringify({
         sessionId: "gemini-123",
         project: "my-project",
-        messages: [{ role: "user", content: "Gemini query" }],
+        messages: [
+          { type: "user", content: "Gemini query" },
+          { type: "gemini", content: "Here is the answer" },
+        ],
         cwd: "/tmp/gemini-app",
       }),
     );
@@ -44,9 +47,11 @@ describe("GeminiSessionProvider", () => {
     const sessions = await provider.findAll();
     const detail = await provider.getDetail(sessions[0]!.filePath);
 
-    expect(detail.messages).toHaveLength(1);
+    expect(detail.messages).toHaveLength(2);
     expect(detail.messages[0]!.role).toBe("user");
     expect(detail.messages[0]!.content).toBe("Gemini query");
+    expect(detail.messages[1]!.role).toBe("assistant");
+    expect(detail.messages[1]!.content).toBe("Here is the answer");
   });
 
   it("has correct name and resume args", () => {

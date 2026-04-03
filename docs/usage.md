@@ -26,7 +26,7 @@ If launched without a specific agent, you'll be prompted to select one. Use ↑/
 agent-sessions --agent <name>
 ```
 
-Skip the selector and go straight to sessions for a specific agent (e.g., `claude`, `gemini`, `codex`, `cursor`).
+Skip the selector and go straight to sessions for a specific agent (e.g., `claude`, `gemini`, `openai`, `cursor`).
 
 ### Interactive TUI
 

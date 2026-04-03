@@ -63,6 +63,7 @@
     "url": "https://github.com/vineethkrishnan/agent-sessions/issues"
   },
   "dependencies": {
+    "better-sqlite3": "^12.8.0",
     "commander": "^13.1.0",
     "ink": "^5.2.0",
     "react": "^18.3.1"
@@ -71,6 +72,7 @@
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
     "@eslint/js": "^10.0.1",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.15.2",
     "@types/react": "^18.3.20",
     "@vitest/coverage-v8": "^4.1.0",

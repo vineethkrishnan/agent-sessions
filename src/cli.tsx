@@ -58,15 +58,15 @@ function runTuiMode(): void {
 
   instance.waitUntilExit().then(() => {
     if (pendingResume) {
-      const { sessionId, providerName } = pendingResume;
+      const { sessionId, providerName, cwd } = pendingResume;
       const resumeArgs = sessionModule.resumeSessionUseCase.buildResumeArgs(
         sessionId,
         providerName,
       );
       if (resumeArgs) {
-        const result = spawnSync(resumeArgs.command, resumeArgs.args, {
-          stdio: "inherit",
-        });
+        const spawnOptions: { stdio: "inherit"; cwd?: string } = { stdio: "inherit" };
+        if (cwd) spawnOptions.cwd = cwd;
+        const result = spawnSync(resumeArgs.command, resumeArgs.args, spawnOptions);
         process.exit(result.status ?? 0);
       }
     }
@@ -94,7 +94,7 @@ async function runFzfMode(): Promise<void> {
     const branch = padRight(truncate(session.gitBranch, 16), 16);
     const messageCount = padRight(String(session.messageCount), 5);
     const preview = truncate(session.preview, 60);
-    return `${session.id}::${session.provider}\t${date} │ ${agent} │ ${project} │ ${branch} │ ${messageCount} │ ${preview}`;
+    return `${session.id}::${session.provider}::${session.cwd}\t${date} │ ${agent} │ ${project} │ ${branch} │ ${messageCount} │ ${preview}`;
   });
 
   const header = `        ${padRight("Date", 16)} │ ${padRight("Agent", 8)} │ ${padRight("Project", 24)} │ ${padRight("Branch", 16)} │ ${padRight("Msgs", 5)} │ First Message`;
@@ -120,19 +120,20 @@ async function runFzfMode(): Promise<void> {
 
     const selection = output.trim().split("\t")[0];
     if (selection) {
-      const separatorIndex = selection.indexOf("::");
-      if (separatorIndex === -1) return;
-      const sessionId = selection.slice(0, separatorIndex);
-      const providerName = selection.slice(separatorIndex + 2);
+      const parts = selection.split("::");
+      if (parts.length < 2) return;
+      const sessionId = parts[0]!;
+      const providerName = parts[1]!;
+      const cwd = parts.slice(2).join("::");
       if (sessionId && providerName) {
         const resumeArgs = sessionModule.resumeSessionUseCase.buildResumeArgs(
           sessionId,
           providerName,
         );
         if (resumeArgs) {
-          const result = spawnSync(resumeArgs.command, resumeArgs.args, {
-            stdio: "inherit",
-          });
+          const spawnOptions: { stdio: "inherit"; cwd?: string } = { stdio: "inherit" };
+          if (cwd) spawnOptions.cwd = cwd;
+          const result = spawnSync(resumeArgs.command, resumeArgs.args, spawnOptions);
           process.exit(result.status ?? 0);
         }
       }

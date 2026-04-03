@@ -1,24 +1,35 @@
 # FAQ
 
-## Where does Claude Code store sessions?
+## Where are sessions stored?
 
-Sessions are stored in `~/.claude/projects/`. Each project has its own subdirectory containing `.jsonl` files for each session.
+Each agent stores sessions in a different location:
+
+| Agent | Location | Format |
+|-------|----------|--------|
+| Claude | `~/.claude/projects/` | JSONL |
+| Gemini | `~/.gemini/tmp/` | JSON |
+| OpenAI Codex | `~/.codex/sessions/` | JSONL |
+| Cursor | `~/.cursor/chats/` (macOS/Linux), `%APPDATA%/Cursor/chats/` (Windows) | SQLite |
 
 ## Why don't I see any sessions?
 
-Make sure you have used Claude Code at least once. Sessions only appear after you've had at least one conversation. Check that `~/.claude/projects/` exists and contains `.jsonl` files.
+Make sure you have used at least one supported agent. Sessions only appear after you've had at least one conversation. You can also use the `a` key to switch between agents, or `--agent <name>` to target a specific one.
 
-## Can I use this without Claude Code installed?
+## Can I use this without all agents installed?
 
-The tool reads session files directly from disk, so it works without Claude Code being installed. However, the "resume" feature requires `claude` to be available in your `$PATH`.
+Yes. agent-sessions reads session files directly from disk and only shows agents that have sessions on your machine. The "resume" feature requires the respective agent's CLI to be available in your `$PATH`.
 
 ## Does this modify my sessions?
 
-**No.** agent-sessions only reads session files. The only destructive operation is the explicit "delete" feature, which removes the `.jsonl` file and its companion directory after confirmation.
+**No.** agent-sessions only reads session files. The only destructive operation is the explicit "delete" feature, which removes the session file and its companion directory after confirmation.
 
 ## What platforms are supported?
 
-macOS and Linux. Windows is not currently supported due to path handling differences.
+macOS, Linux, and Windows. Session paths are detected automatically per platform.
+
+## Why does resume fail with "No conversation found"?
+
+Some agents (like Claude Code) scope session lookup to the current working directory. agent-sessions handles this by spawning the resume command from the session's original working directory. If the original directory no longer exists, resume may fail.
 
 ## How do I update?
 

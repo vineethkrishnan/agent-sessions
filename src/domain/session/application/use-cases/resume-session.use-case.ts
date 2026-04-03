@@ -8,7 +8,9 @@ export class ResumeSessionUseCase {
   ) {}
 
   execute(sessionId: string, providerName: string): void {
-    const provider = this.providers.find((candidate) => candidate.name === providerName);
+    const provider = this.providers.find(
+      (candidate) => candidate.name.toLowerCase() === providerName.toLowerCase(),
+    );
     if (!provider) {
       throw new Error(`Provider not found: ${providerName}`);
     }

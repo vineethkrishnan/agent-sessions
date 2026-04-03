@@ -40,14 +40,19 @@ export class GeminiSessionProvider implements SessionProviderPort {
           const stat = fs.statSync(filePath);
           const chatPayload = JSON.parse(fs.readFileSync(filePath, "utf-8"));
 
+          const chatMessages = (chatPayload.messages || []).filter(
+            (m: { type?: string }) => m.type === "user" || m.type === "gemini",
+          );
+          const firstUserMessage = chatMessages.find((m: { type: string }) => m.type === "user");
+
           results.push(
             new Session({
               id: path.basename(file, ".json"),
               filePath,
               project: chatPayload.project || "Unknown",
               gitBranch: chatPayload.gitBranch || "",
-              messageCount: chatPayload.messages?.length || 0,
-              preview: stringifyContent(chatPayload.messages?.[0]?.content) || "(no preview)",
+              messageCount: chatMessages.length,
+              preview: stringifyContent(firstUserMessage?.content) || "(no preview)",
               modifiedAt: stat.mtime,
               cwd: chatPayload.cwd || "",
               provider: this.name,
@@ -65,12 +70,14 @@ export class GeminiSessionProvider implements SessionProviderPort {
   async getDetail(filePath: string): Promise<SessionDetail> {
     try {
       const chatPayload = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-      const messages = (chatPayload.messages || []).map(
-        (message: { role: string; content?: unknown }) => ({
-          role: message.role?.toLowerCase() === "user" ? ("user" as const) : ("assistant" as const),
+      const messages = (chatPayload.messages || [])
+        .filter(
+          (message: { type?: string }) => message.type === "user" || message.type === "gemini",
+        )
+        .map((message: { type: string; content?: unknown }) => ({
+          role: message.type === "user" ? ("user" as const) : ("assistant" as const),
           content: stringifyContent(message.content),
-        }),
-      );
+        }));
 
       return new SessionDetail({
         messages,

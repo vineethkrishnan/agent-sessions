@@ -116,7 +116,7 @@ export function SessionTable({
       </Box>
 
       <Text dimColor>
-        Arrows: navigate Enter: resume p: preview /: search d: delete Esc: clear q: quit
+        Arrows: navigate Enter: resume p: preview /: search d: delete a: agents Esc: clear q: quit
       </Text>
 
       {isSearchMode && (

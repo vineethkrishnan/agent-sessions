@@ -1,64 +1,176 @@
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
+import Database from "better-sqlite3";
 import type { SessionProviderPort } from "../../../application/ports/session-provider.port.js";
 import { Session } from "../../../domain/session.model.js";
 import { SessionDetail } from "../../../domain/session-detail.model.js";
-import { stringifyContent, readLines } from "../../parsers/jsonl-parser.js";
+import { stringifyContent } from "../../parsers/jsonl-parser.js";
+
+interface CursorMeta {
+  agentId: string;
+  name?: string;
+  createdAt?: number;
+  lastUsedModel?: string;
+}
+
+interface CursorMessage {
+  role: string;
+  content: unknown;
+}
 
 export class CursorSessionProvider implements SessionProviderPort {
   readonly name = "Cursor";
   buildResumeArgs(sessionId: string) {
-    return { command: "agent", args: ["--resume", sessionId] };
+    return { command: "cursor", args: ["--resume", sessionId] };
   }
-  private readonly sessionsDir: string;
+  private readonly chatsDir: string;
 
-  constructor(sessionsDir?: string) {
-    this.sessionsDir =
-      sessionsDir ??
-      process.env.CURSOR_SESSIONS_DIR ??
-      path.join(os.homedir(), ".cursor-agent", "sessions");
+  constructor(chatsDir?: string) {
+    this.chatsDir = chatsDir ?? process.env.CURSOR_SESSIONS_DIR ?? this.detectChatsDir();
+  }
+
+  private detectChatsDir(): string {
+    const platform = os.platform();
+    const home = os.homedir();
+
+    if (platform === "win32") {
+      const appData = process.env.APPDATA || path.join(home, "AppData", "Roaming");
+      const windowsPath = path.join(appData, "Cursor", "chats");
+      if (fs.existsSync(windowsPath)) return windowsPath;
+    }
+
+    return path.join(home, ".cursor", "chats");
+  }
+
+  private findSessionDbs(): { dbPath: string; hashDir: string; uuidDir: string }[] {
+    if (!fs.existsSync(this.chatsDir)) return [];
+
+    const results: { dbPath: string; hashDir: string; uuidDir: string }[] = [];
+
+    let hashDirs: string[];
+    try {
+      hashDirs = fs.readdirSync(this.chatsDir);
+    } catch {
+      return [];
+    }
+
+    for (const hashDir of hashDirs) {
+      const hashPath = path.join(this.chatsDir, hashDir);
+      try {
+        if (!fs.statSync(hashPath).isDirectory()) continue;
+      } catch {
+        continue;
+      }
+
+      let uuidDirs: string[];
+      try {
+        uuidDirs = fs.readdirSync(hashPath);
+      } catch {
+        continue;
+      }
+
+      for (const uuidDir of uuidDirs) {
+        const dbPath = path.join(hashPath, uuidDir, "store.db");
+        if (fs.existsSync(dbPath)) {
+          results.push({ dbPath, hashDir, uuidDir });
+        }
+      }
+    }
+
+    return results;
+  }
+
+  private openDb(dbPath: string): InstanceType<typeof Database> | null {
+    try {
+      return new Database(dbPath, { readonly: true });
+    } catch {
+      return null;
+    }
+  }
+
+  private readMeta(db: InstanceType<typeof Database>): CursorMeta | null {
+    try {
+      const row = db.prepare("SELECT value FROM meta").get() as { value: string } | undefined;
+      if (!row) return null;
+      return JSON.parse(Buffer.from(row.value, "hex").toString("utf-8"));
+    } catch {
+      return null;
+    }
+  }
+
+  private readMessages(db: InstanceType<typeof Database>): CursorMessage[] {
+    try {
+      const rows = db.prepare("SELECT data FROM blobs").all() as { data: Buffer }[];
+      const messages: CursorMessage[] = [];
+
+      for (const row of rows) {
+        try {
+          const text =
+            typeof row.data === "string" ? row.data : Buffer.from(row.data).toString("utf-8");
+          if (!text.startsWith('{"')) continue;
+          const parsed = JSON.parse(text);
+          if (parsed.role === "user" || parsed.role === "assistant") {
+            messages.push({ role: parsed.role, content: parsed.content });
+          }
+        } catch {
+          continue;
+        }
+      }
+
+      return messages;
+    } catch {
+      return [];
+    }
   }
 
   async findAll(): Promise<Session[]> {
-    if (!fs.existsSync(this.sessionsDir)) return [];
-
+    const sessionDbs = this.findSessionDbs();
     const results: Session[] = [];
-    const files = fs
-      .readdirSync(this.sessionsDir)
-      .filter((fileName) => fileName.endsWith(".jsonl"));
 
-    for (const file of files) {
-      const filePath = path.join(this.sessionsDir, file);
+    for (const { dbPath, uuidDir } of sessionDbs) {
+      const db = this.openDb(dbPath);
+      if (!db) continue;
+
       try {
-        const stat = fs.statSync(filePath);
-        const lines = readLines(filePath);
-        if (lines.length === 0) continue;
+        const meta = this.readMeta(db);
+        if (!meta) continue;
+
+        const messages = this.readMessages(db);
+        const userMessages = messages.filter((m) => m.role === "user");
 
         let preview = "(no preview)";
-        const project = "Unknown";
-        const gitBranch = "";
-        const cwd = "";
-        let messageCount = 0;
-
-        for (const line of lines) {
-          const parsedEntry = JSON.parse(line);
-          if (parsedEntry.type === "user" || parsedEntry.type === "assistant") {
-            messageCount++;
-            if (parsedEntry.type === "user" && preview === "(no preview)") {
-              preview = stringifyContent(parsedEntry.message?.content) || "(no preview)";
-            }
+        let cwd = "";
+        for (const msg of userMessages) {
+          const raw = stringifyContent(msg.content);
+          // Extract workspace path from Cursor's system context
+          if (!cwd) {
+            const cwdMatch = raw.match(/Workspace Path:\s*(.+)/);
+            if (cwdMatch) cwd = cwdMatch[1]!.trim();
           }
+          const text = raw.replace(/\s+/g, " ").trim();
+          // Extract actual query from Cursor's XML wrapper
+          const queryMatch = text.match(/<user_query>\s*([\s\S]*?)\s*<\/user_query>/);
+          if (queryMatch) {
+            preview = queryMatch[1]!.trim().slice(0, 80);
+            break;
+          }
+          // Skip system context messages (start with XML tags)
+          if (text.startsWith("<")) continue;
+          preview = text.slice(0, 80);
+          break;
         }
+
+        const stat = fs.statSync(dbPath);
 
         results.push(
           new Session({
-            id: path.basename(file, ".jsonl"),
-            filePath,
-            project,
-            gitBranch,
-            messageCount,
-            preview,
+            id: meta.agentId || uuidDir,
+            filePath: dbPath,
+            project: meta.name || "Unknown",
+            gitBranch: "",
+            messageCount: messages.length,
+            preview: preview || "(no preview)",
             modifiedAt: stat.mtime,
             cwd,
             provider: this.name,
@@ -66,6 +178,8 @@ export class CursorSessionProvider implements SessionProviderPort {
         );
       } catch {
         continue;
+      } finally {
+        db.close();
       }
     }
 
@@ -73,29 +187,29 @@ export class CursorSessionProvider implements SessionProviderPort {
   }
 
   async getDetail(filePath: string): Promise<SessionDetail> {
+    const db = this.openDb(filePath);
+    if (!db) {
+      return new SessionDetail({ messages: [], totalMessages: 0, cwd: "", gitBranch: "" });
+    }
+
     try {
-      const lines = readLines(filePath);
-      const messages = lines
-        .map((line) => {
-          const parsedEntry = JSON.parse(line);
-          if (parsedEntry.type === "user" || parsedEntry.type === "assistant") {
-            return {
-              role: parsedEntry.type as "user" | "assistant",
-              content: stringifyContent(parsedEntry.message?.content),
-            };
-          }
-          return null;
-        })
-        .filter((msg): msg is { role: "user" | "assistant"; content: string } => msg !== null);
+      const messages = this.readMessages(db);
+
+      const sessionMessages = messages.map((msg) => ({
+        role: msg.role as "user" | "assistant",
+        content: stringifyContent(msg.content),
+      }));
 
       return new SessionDetail({
-        messages,
-        totalMessages: messages.length,
+        messages: sessionMessages,
+        totalMessages: sessionMessages.length,
         cwd: "",
         gitBranch: "",
       });
     } catch {
       return new SessionDetail({ messages: [], totalMessages: 0, cwd: "", gitBranch: "" });
+    } finally {
+      db.close();
     }
   }
 }

@@ -10,7 +10,7 @@ agent-sessions [options]
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `--agent <name>` | Specify the AI agent (`claude`, `gemini`, `codex`, `cursor`) | `(selector)` |
+| `--agent <name>` | Specify the AI agent (`claude`, `gemini`, `openai`, `cursor`) | `(selector)` |
 | `--fzf` | Use fzf for session selection | `false` |
 | `--delete` | Enable delete mode | `false` |
 | `--no-splash` | Skip the splash screen animation | `false` |

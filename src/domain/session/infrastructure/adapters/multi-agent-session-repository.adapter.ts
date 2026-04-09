@@ -12,18 +12,16 @@ export class MultiAgentSessionRepositoryAdapter
   constructor(private readonly providers: SessionProviderPort[]) {}
 
   async findAll(): Promise<Session[]> {
-    const allSessions: Session[] = [];
     const providersToSearch = this.activeProviderId
       ? this.providers.filter(
           (provider) => provider.name.toLowerCase() === this.activeProviderId?.toLowerCase(),
         )
       : this.providers;
 
-    for (const provider of providersToSearch) {
-      const sessions = await provider.findAll();
-      allSessions.push(...sessions);
-    }
-    return allSessions.sort((a, b) => b.modifiedAt.getTime() - a.modifiedAt.getTime());
+    const results = await Promise.all(
+      providersToSearch.map((provider) => provider.findAll().catch(() => [] as Session[])),
+    );
+    return results.flat().sort((a, b) => b.modifiedAt.getTime() - a.modifiedAt.getTime());
   }
 
   async getDetail(filePath: string, providerName?: string): Promise<SessionDetail> {

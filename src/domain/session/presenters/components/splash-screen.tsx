@@ -29,9 +29,10 @@ const BANNER_LINES = [
 interface SplashScreenProps {
   version: string;
   loading?: boolean;
+  onComplete?: () => void;
 }
 
-export function SplashScreen({ version, loading }: SplashScreenProps) {
+export function SplashScreen({ version, loading, onComplete }: SplashScreenProps) {
   const allLines = [...LOGO_LINES, "", ...BANNER_LINES];
   const [visibleCount, setVisibleCount] = useState(0);
 
@@ -40,7 +41,11 @@ export function SplashScreen({ version, loading }: SplashScreenProps) {
       const timer = setTimeout(() => setVisibleCount((c) => c + 1), 60);
       return () => clearTimeout(timer);
     }
-  }, [visibleCount, allLines.length]);
+    if (visibleCount === allLines.length && onComplete) {
+      const timer = setTimeout(onComplete, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [visibleCount, allLines.length, onComplete]);
 
   return (
     <Box flexDirection="column" paddingTop={1}>

@@ -4,7 +4,7 @@ import os from "node:os";
 import type { SessionProviderPort } from "../../../application/ports/session-provider.port.js";
 import { Session } from "../../../domain/session.model.js";
 import { SessionDetail } from "../../../domain/session-detail.model.js";
-import { parseSessionFile, parseSessionDetail } from "../../parsers/jsonl-parser.js";
+import { parseSessionFileAsync, parseSessionDetail } from "../../parsers/jsonl-parser.js";
 import { decodeProjectPath } from "../../../../../common/helpers/path.helper.js";
 
 export class ClaudeSessionProvider implements SessionProviderPort {
@@ -52,20 +52,22 @@ export class ClaudeSessionProvider implements SessionProviderPort {
       }
     }
 
-    return results.map((file) => {
-      const metadata = parseSessionFile(file.filePath);
-      return new Session({
-        id: path.basename(file.filePath, ".jsonl"),
-        filePath: file.filePath,
-        project: decodeProjectPath(file.dirName),
-        gitBranch: metadata.gitBranch,
-        messageCount: metadata.messageCount,
-        preview: metadata.preview,
-        modifiedAt: file.mtime,
-        cwd: metadata.cwd,
-        provider: this.name,
-      });
-    });
+    return Promise.all(
+      results.map(async (file) => {
+        const metadata = await parseSessionFileAsync(file.filePath);
+        return new Session({
+          id: path.basename(file.filePath, ".jsonl"),
+          filePath: file.filePath,
+          project: decodeProjectPath(file.dirName),
+          gitBranch: metadata.gitBranch,
+          messageCount: metadata.messageCount,
+          preview: metadata.preview,
+          modifiedAt: file.mtime,
+          cwd: metadata.cwd,
+          provider: this.name,
+        });
+      }),
+    );
   }
 
   async getDetail(filePath: string): Promise<SessionDetail> {

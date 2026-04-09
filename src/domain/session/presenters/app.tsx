@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Box, useInput, useApp } from "ink";
+import { Box, Text, useInput, useApp } from "ink";
 import type { SessionModule } from "../session.module.js";
 import type { Session } from "../domain/session.model.js";
 import { SplashScreen } from "./components/splash-screen.js";
@@ -31,7 +31,7 @@ interface AppProps {
 export function App({ module, options, version, onResume }: AppProps) {
   const { exit } = useApp();
   const [isAgentSelectorVisible, setAgentSelectorVisible] = useState(!options.agent);
-  const [isSplashVisible, setSplashVisible] = useState(!options.noSplash && !options.agent);
+  const [isSplashVisible, setSplashVisible] = useState(!options.noSplash);
 
   const handleResume = useCallback(
     (session: Session) => {
@@ -74,12 +74,9 @@ export function App({ module, options, version, onResume }: AppProps) {
     }
   }, [options.agent, switchProvider]);
 
-  // Hide splash as soon as data is loaded or if it's disabled
-  useEffect(() => {
-    if (isLoaded) {
-      setSplashVisible(false);
-    }
-  }, [isLoaded]);
+  const handleSplashComplete = useCallback(() => {
+    setSplashVisible(false);
+  }, []);
 
   useInput((input, key) => {
     if (input === "a" && !previewSession) {
@@ -95,6 +92,10 @@ export function App({ module, options, version, onResume }: AppProps) {
     setAgentSelectorVisible(false);
   };
 
+  if (isSplashVisible) {
+    return <SplashScreen version={version} onComplete={handleSplashComplete} />;
+  }
+
   if (isAgentSelectorVisible) {
     return (
       <AgentSelector
@@ -105,8 +106,12 @@ export function App({ module, options, version, onResume }: AppProps) {
     );
   }
 
-  if (isSplashVisible || !isLoaded) {
-    return <SplashScreen version={version} loading={!isSplashVisible} />;
+  if (!isLoaded) {
+    return (
+      <Box paddingTop={1} paddingLeft={1}>
+        <Text dimColor>Loading sessions...</Text>
+      </Box>
+    );
   }
 
   if (previewSession && previewDetail) {

@@ -71,18 +71,17 @@ export class OpenAICodexProvider implements SessionProviderPort {
 
   async findAll(): Promise<Session[]> {
     const files = this.findFilesRecursive(this.sessionsDir);
-    const results: Session[] = [];
 
-    for (const filePath of files) {
-      try {
-        const stat = fs.statSync(filePath);
-        const lines = readLines(filePath);
-        if (lines.length === 0) continue;
+    const sessions = await Promise.all(
+      files.map(async (filePath) => {
+        try {
+          const stat = fs.statSync(filePath);
+          const lines = readLines(filePath);
+          if (lines.length === 0) return null;
 
-        const summary = this.parseSessionSummary(lines);
+          const summary = this.parseSessionSummary(lines);
 
-        results.push(
-          new Session({
+          return new Session({
             id: path.basename(filePath, ".jsonl"),
             filePath,
             project: summary.project,
@@ -92,14 +91,14 @@ export class OpenAICodexProvider implements SessionProviderPort {
             modifiedAt: stat.mtime,
             cwd: summary.cwd,
             provider: this.name,
-          }),
-        );
-      } catch {
-        continue;
-      }
-    }
+          });
+        } catch {
+          return null;
+        }
+      }),
+    );
 
-    return results;
+    return sessions.filter((s): s is Session => s !== null);
   }
 
   async getDetail(filePath: string): Promise<SessionDetail> {

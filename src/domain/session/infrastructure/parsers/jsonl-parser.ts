@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import readline from "node:readline";
 import type { SessionMessage } from "../../domain/session-detail.model.js";
 
 interface ParsedSessionMetadata {
@@ -55,6 +56,60 @@ export function stringifyContent(content: unknown): string {
   }
 }
 
+/**
+ * Streams the JSONL file line-by-line, counting messages and extracting
+ * metadata from only the first user message. Avoids reading the entire
+ * file into memory.
+ */
+export async function parseSessionFileAsync(filePath: string): Promise<ParsedSessionMetadata> {
+  let fd: number;
+  try {
+    fd = fs.openSync(filePath, "r");
+  } catch {
+    return { preview: "(unreadable)", gitBranch: "", cwd: "", messageCount: 0 };
+  }
+
+  const stream = fs.createReadStream("", { fd, encoding: "utf-8" });
+  const rl = readline.createInterface({ input: stream, crlfDelay: Infinity });
+
+  let userCount = 0;
+  let assistantCount = 0;
+  let preview = "(no preview)";
+  let gitBranch = "";
+  let cwd = "";
+
+  for await (const line of rl) {
+    if (!line.trim()) continue;
+    try {
+      const entry = JSON.parse(line);
+
+      if (entry.type === "user") {
+        userCount++;
+        if (userCount === 1) {
+          const text = extractMessageText(entry).replace(/\s+/g, " ").trim().slice(0, 80);
+          if (text && !text.startsWith("<")) {
+            preview = text;
+          }
+          gitBranch = entry.gitBranch ?? "";
+          cwd = entry.cwd ?? "";
+        }
+      } else if (entry.type === "assistant") {
+        assistantCount++;
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  return {
+    preview,
+    gitBranch,
+    cwd,
+    messageCount: userCount + assistantCount,
+  };
+}
+
+/** Synchronous fallback — reads entire file. Use parseSessionFileAsync when possible. */
 export function parseSessionFile(filePath: string): ParsedSessionMetadata {
   const lines = readLines(filePath);
   if (lines.length === 0) {

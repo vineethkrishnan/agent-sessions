@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.14](https://github.com/vineethkrishnan/agent-sessions/compare/v0.1.13...v0.1.14) (2026-04-09)
+
+
+### Performance
+
+* **session:** fix splash screen and improve session loading performance ([#37](https://github.com/vineethkrishnan/agent-sessions/issues/37)) ([b154ad1](https://github.com/vineethkrishnan/agent-sessions/commit/b154ad175a1f9a3c67b0e14c628b249f43b2d6b5))
+
 ## [0.1.13](https://github.com/vineethkrishnan/agent-sessions/compare/v0.1.12...v0.1.13) (2026-04-09)
 
 

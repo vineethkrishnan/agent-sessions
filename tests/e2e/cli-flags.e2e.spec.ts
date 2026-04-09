@@ -65,22 +65,15 @@ describe("CLI Flags", () => {
       expect(screen).toContain("session");
     });
 
-    it("handles unknown agent name gracefully without crashing", async () => {
+    it("exits with error for unknown agent name", async () => {
       session = spawnCli(["--agent", "nonexistent", "--no-splash"], fixtureEnv);
 
-      // The app catches the error and still renders the session table
-      // It may show all sessions or an empty state, but should not crash
-      await session.waitForText("Universal AI Session Manager", 5000).catch(() => {
-        // May still be loading or showing error
-      });
-
-      // App should not have crashed
-      expect(session.hasExited()).toBe(false);
-
-      // Verify we can still interact with the app
-      session.send("q");
       const exitCode = await session.waitForExit(5000);
-      expect(exitCode).toBe(0);
+
+      expect(exitCode).toBe(1);
+      const screen = session.getScreen();
+      expect(screen).toContain('Unknown agent: "nonexistent"');
+      expect(screen).toContain("Valid options:");
     });
   });
 

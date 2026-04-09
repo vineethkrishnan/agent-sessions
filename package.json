@@ -1,7 +1,7 @@
 {
   "name": "@vineethnkrishnan/agent-sessions",
   "version": "0.1.12",
-  "description": "Interactive session manager for CLI agents (Claude, Gemini, Codex, Cursor) — browse, search, delete, and resume past conversations",
+  "description": "Interactive session manager for CLI agents (Claude, Gemini, Codex, Cursor, Windsurf) — browse, search, delete, and resume past conversations",
   "type": "module",
   "bin": {
     "agent-sessions": "dist/cli.js"
@@ -43,6 +43,7 @@
     "gemini",
     "codex",
     "cursor",
+    "windsurf",
     "cli",
     "session",
     "resume",

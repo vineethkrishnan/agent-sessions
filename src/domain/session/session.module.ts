@@ -9,6 +9,7 @@ import { ClaudeSessionProvider } from "./infrastructure/providers/claude/claude-
 import { CursorSessionProvider } from "./infrastructure/providers/cursor/cursor-session.provider.js";
 import { GeminiSessionProvider } from "./infrastructure/providers/gemini/gemini-session.provider.js";
 import { OpenAICodexProvider } from "./infrastructure/providers/openai/openai-codex.provider.js";
+import { WindsurfSessionProvider } from "./infrastructure/providers/windsurf/windsurf-session.provider.js";
 
 export function createSessionModule() {
   const providers = [
@@ -16,6 +17,7 @@ export function createSessionModule() {
     new CursorSessionProvider(),
     new GeminiSessionProvider(),
     new OpenAICodexProvider(),
+    new WindsurfSessionProvider(),
   ];
 
   const repository = new MultiAgentSessionRepositoryAdapter(providers);

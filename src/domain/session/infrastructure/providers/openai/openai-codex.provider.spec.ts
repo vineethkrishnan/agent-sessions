@@ -45,6 +45,56 @@ describe("OpenAICodexProvider", () => {
     expect(detail.messages[0]!.content).toBe("Codex query");
   });
 
+  it("extracts metadata (cwd, gitBranch, project) from JSONL entries", async () => {
+    const nestedDir = path.join(tmpDir, "2026", "04");
+    fs.mkdirSync(nestedDir, { recursive: true });
+    const sessionFile = path.join(nestedDir, "meta-session.jsonl");
+    fs.writeFileSync(
+      sessionFile,
+      [
+        JSON.stringify({ cwd: "/home/user/app", gitBranch: "feat/api", project: "my-app" }),
+        JSON.stringify({ role: "user", content: "Build the API" }),
+        JSON.stringify({ role: "assistant", content: "Sure, I'll build it." }),
+      ].join("\n"),
+    );
+
+    const provider = new OpenAICodexProvider(tmpDir);
+    const sessions = await provider.findAll();
+
+    expect(sessions).toHaveLength(2);
+    const session = sessions.find((s) => s.id === "meta-session");
+    expect(session!.cwd).toBe("/home/user/app");
+    expect(session!.gitBranch).toBe("feat/api");
+    expect(session!.project).toBe("my-app");
+  });
+
+  it("getDetail returns metadata from JSONL entries", async () => {
+    const nestedDir = path.join(tmpDir, "2026", "04");
+    fs.mkdirSync(nestedDir, { recursive: true });
+    const sessionFile = path.join(nestedDir, "detail-meta.jsonl");
+    fs.writeFileSync(
+      sessionFile,
+      [
+        JSON.stringify({ cwd: "/home/user/project", gitBranch: "main" }),
+        JSON.stringify({ role: "user", content: "Hello" }),
+        JSON.stringify({ role: "assistant", content: "Hi" }),
+      ].join("\n"),
+    );
+
+    const provider = new OpenAICodexProvider(tmpDir);
+    const detail = await provider.getDetail(sessionFile);
+
+    expect(detail.cwd).toBe("/home/user/project");
+    expect(detail.gitBranch).toBe("main");
+    expect(detail.messages).toHaveLength(2);
+  });
+
+  it("returns empty array for non-existent directory", async () => {
+    const provider = new OpenAICodexProvider("/tmp/nonexistent-codex-path");
+    const sessions = await provider.findAll();
+    expect(sessions).toHaveLength(0);
+  });
+
   it("has correct name and resume args", () => {
     const provider = new OpenAICodexProvider(tmpDir);
     expect(provider.name).toBe("OpenAI");

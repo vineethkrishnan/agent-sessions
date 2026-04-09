@@ -10,8 +10,6 @@ import { stringifyContent } from "../../parsers/jsonl-parser.js";
 interface CursorMeta {
   agentId: string;
   name?: string;
-  createdAt?: number;
-  lastUsedModel?: string;
 }
 
 interface CursorMessage {
@@ -43,10 +41,10 @@ export class CursorSessionProvider implements SessionProviderPort {
     return path.join(home, ".cursor", "chats");
   }
 
-  private findSessionDbs(): { dbPath: string; hashDir: string; uuidDir: string }[] {
+  private findSessionDbs(): { dbPath: string; uuidDir: string }[] {
     if (!fs.existsSync(this.chatsDir)) return [];
 
-    const results: { dbPath: string; hashDir: string; uuidDir: string }[] = [];
+    const results: { dbPath: string; uuidDir: string }[] = [];
 
     let hashDirs: string[];
     try {
@@ -73,7 +71,7 @@ export class CursorSessionProvider implements SessionProviderPort {
       for (const uuidDir of uuidDirs) {
         const dbPath = path.join(hashPath, uuidDir, "store.db");
         if (fs.existsSync(dbPath)) {
-          results.push({ dbPath, hashDir, uuidDir });
+          results.push({ dbPath, uuidDir });
         }
       }
     }
@@ -137,29 +135,8 @@ export class CursorSessionProvider implements SessionProviderPort {
         if (!meta) continue;
 
         const messages = this.readMessages(db);
-        const userMessages = messages.filter((m) => m.role === "user");
-
-        let preview = "(no preview)";
-        let cwd = "";
-        for (const msg of userMessages) {
-          const raw = stringifyContent(msg.content);
-          // Extract workspace path from Cursor's system context
-          if (!cwd) {
-            const cwdMatch = raw.match(/Workspace Path:\s*(.+)/);
-            if (cwdMatch) cwd = cwdMatch[1]!.trim();
-          }
-          const text = raw.replace(/\s+/g, " ").trim();
-          // Extract actual query from Cursor's XML wrapper
-          const queryMatch = text.match(/<user_query>\s*([\s\S]*?)\s*<\/user_query>/);
-          if (queryMatch) {
-            preview = queryMatch[1]!.trim().slice(0, 80);
-            break;
-          }
-          // Skip system context messages (start with XML tags)
-          if (text.startsWith("<")) continue;
-          preview = text.slice(0, 80);
-          break;
-        }
+        const cwd = this.extractCwdFromMessages(messages);
+        const preview = this.extractPreviewFromMessages(messages);
 
         const stat = fs.statSync(dbPath);
 
@@ -186,6 +163,28 @@ export class CursorSessionProvider implements SessionProviderPort {
     return results;
   }
 
+  private extractCwdFromMessages(messages: CursorMessage[]): string {
+    for (const msg of messages) {
+      if (msg.role !== "user") continue;
+      const raw = stringifyContent(msg.content);
+      const cwdMatch = raw.match(/Workspace Path:\s*(.+)/);
+      if (cwdMatch) return cwdMatch[1]!.trim();
+    }
+    return "";
+  }
+
+  private extractPreviewFromMessages(messages: CursorMessage[]): string {
+    const userMessages = messages.filter((m) => m.role === "user");
+    for (const msg of userMessages) {
+      const text = stringifyContent(msg.content).replace(/\s+/g, " ").trim();
+      const queryMatch = text.match(/<user_query>\s*([\s\S]*?)\s*<\/user_query>/);
+      if (queryMatch) return queryMatch[1]!.trim().slice(0, 80);
+      if (text.startsWith("<")) continue;
+      return text.slice(0, 80);
+    }
+    return "(no preview)";
+  }
+
   async getDetail(filePath: string): Promise<SessionDetail> {
     const db = this.openDb(filePath);
     if (!db) {
@@ -194,6 +193,7 @@ export class CursorSessionProvider implements SessionProviderPort {
 
     try {
       const messages = this.readMessages(db);
+      const cwd = this.extractCwdFromMessages(messages);
 
       const sessionMessages = messages.map((msg) => ({
         role: msg.role as "user" | "assistant",
@@ -203,7 +203,7 @@ export class CursorSessionProvider implements SessionProviderPort {
       return new SessionDetail({
         messages: sessionMessages,
         totalMessages: sessionMessages.length,
-        cwd: "",
+        cwd,
         gitBranch: "",
       });
     } catch {

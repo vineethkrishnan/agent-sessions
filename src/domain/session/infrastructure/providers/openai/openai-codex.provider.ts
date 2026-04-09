@@ -36,6 +36,39 @@ export class OpenAICodexProvider implements SessionProviderPort {
     return results;
   }
 
+  private parseSessionSummary(lines: string[]): {
+    cwd: string;
+    gitBranch: string;
+    project: string;
+    messageCount: number;
+    preview: string;
+  } {
+    let cwd = "";
+    let gitBranch = "";
+    let project = "";
+    let messageCount = 0;
+    let preview = "(no preview)";
+
+    for (const line of lines) {
+      try {
+        const entry = JSON.parse(line);
+        if (entry.cwd && !cwd) cwd = entry.cwd;
+        if (entry.gitBranch && !gitBranch) gitBranch = entry.gitBranch;
+        if (entry.project && !project) project = entry.project;
+        if (entry.role === "user" || entry.role === "assistant") {
+          messageCount++;
+          if (entry.role === "user" && preview === "(no preview)") {
+            preview = stringifyContent(entry.content) || "(no preview)";
+          }
+        }
+      } catch {
+        continue;
+      }
+    }
+
+    return { cwd, gitBranch, project: project || "Unknown", messageCount, preview };
+  }
+
   async findAll(): Promise<Session[]> {
     const files = this.findFilesRecursive(this.sessionsDir);
     const results: Session[] = [];
@@ -46,30 +79,18 @@ export class OpenAICodexProvider implements SessionProviderPort {
         const lines = readLines(filePath);
         if (lines.length === 0) continue;
 
-        let preview = "(no preview)";
-        const project = "Unknown";
-        let messageCount = 0;
-
-        for (const line of lines) {
-          const parsedEntry = JSON.parse(line);
-          if (parsedEntry.role === "user" || parsedEntry.role === "assistant") {
-            messageCount++;
-            if (parsedEntry.role === "user" && preview === "(no preview)") {
-              preview = stringifyContent(parsedEntry.content) || "(no preview)";
-            }
-          }
-        }
+        const summary = this.parseSessionSummary(lines);
 
         results.push(
           new Session({
             id: path.basename(filePath, ".jsonl"),
             filePath,
-            project,
-            gitBranch: "",
-            messageCount,
-            preview,
+            project: summary.project,
+            gitBranch: summary.gitBranch,
+            messageCount: summary.messageCount,
+            preview: summary.preview,
             modifiedAt: stat.mtime,
-            cwd: "",
+            cwd: summary.cwd,
             provider: this.name,
           }),
         );
@@ -84,6 +105,8 @@ export class OpenAICodexProvider implements SessionProviderPort {
   async getDetail(filePath: string): Promise<SessionDetail> {
     try {
       const lines = readLines(filePath);
+      const metadata = this.parseSessionSummary(lines);
+
       const messages = lines
         .map((line) => {
           const parsedEntry = JSON.parse(line);
@@ -100,8 +123,8 @@ export class OpenAICodexProvider implements SessionProviderPort {
       return new SessionDetail({
         messages,
         totalMessages: messages.length,
-        cwd: "",
-        gitBranch: "",
+        cwd: metadata.cwd,
+        gitBranch: metadata.gitBranch,
       });
     } catch {
       return new SessionDetail({ messages: [], totalMessages: 0, cwd: "", gitBranch: "" });

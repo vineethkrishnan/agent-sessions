@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.13](https://github.com/vineethkrishnan/agent-sessions/compare/v0.1.12...v0.1.13) (2026-04-09)
+
+
+### Features
+
+* **session:** add Windsurf provider, fix provider gaps, and regenerate docs ([#34](https://github.com/vineethkrishnan/agent-sessions/issues/34)) ([8c19e10](https://github.com/vineethkrishnan/agent-sessions/commit/8c19e10032fb576ee1f31b1a704ed0cf97e52841))
+
 ## [0.1.12](https://github.com/vineethkrishnan/agent-sessions/compare/v0.1.11...v0.1.12) (2026-04-03)
 
 

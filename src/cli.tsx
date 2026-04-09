@@ -19,7 +19,7 @@ const pkg = require("../package.json");
 const program = new Command()
   .name("agent-sessions")
   .description(
-    "Interactive session manager for CLI Agents (Claude, Gemini, etc.) — browse, search, delete, and resume past conversations",
+    "Interactive session manager for CLI Agents (Claude, Gemini, Codex, Cursor, Windsurf) — browse, search, delete, and resume past conversations",
   )
   .version(pkg.version, "-v, --version")
   .option("--agent <name>", "Specify the agent (claude, gemini, etc.)")
@@ -38,6 +38,15 @@ const options: CliOptions = {
 };
 
 const sessionModule = createSessionModule();
+
+if (options.agent) {
+  const validProviders = sessionModule.multiAgentRepository.getProviders();
+  const validIds = validProviders.map((p) => p.id);
+  if (options.agent !== "all" && !validIds.includes(options.agent.toLowerCase())) {
+    console.error(`Unknown agent: "${options.agent}". Valid options: ${validIds.join(", ")}, all`);
+    process.exit(1);
+  }
+}
 
 if (options.fzf) {
   runFzfMode();

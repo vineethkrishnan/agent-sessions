@@ -36,6 +36,26 @@ export class OpenAICodexProvider implements SessionProviderPort {
     return results;
   }
 
+  private extractMetadata(lines: string[]): { cwd: string; gitBranch: string; project: string } {
+    let cwd = "";
+    let gitBranch = "";
+    let project = "";
+
+    for (const line of lines) {
+      try {
+        const entry = JSON.parse(line);
+        if (entry.cwd && !cwd) cwd = entry.cwd;
+        if (entry.gitBranch && !gitBranch) gitBranch = entry.gitBranch;
+        if (entry.project && !project) project = entry.project;
+        if (cwd && gitBranch && project) break;
+      } catch {
+        continue;
+      }
+    }
+
+    return { cwd, gitBranch, project: project || "Unknown" };
+  }
+
   async findAll(): Promise<Session[]> {
     const files = this.findFilesRecursive(this.sessionsDir);
     const results: Session[] = [];
@@ -47,8 +67,8 @@ export class OpenAICodexProvider implements SessionProviderPort {
         if (lines.length === 0) continue;
 
         let preview = "(no preview)";
-        const project = "Unknown";
         let messageCount = 0;
+        const metadata = this.extractMetadata(lines);
 
         for (const line of lines) {
           const parsedEntry = JSON.parse(line);
@@ -64,12 +84,12 @@ export class OpenAICodexProvider implements SessionProviderPort {
           new Session({
             id: path.basename(filePath, ".jsonl"),
             filePath,
-            project,
-            gitBranch: "",
+            project: metadata.project,
+            gitBranch: metadata.gitBranch,
             messageCount,
             preview,
             modifiedAt: stat.mtime,
-            cwd: "",
+            cwd: metadata.cwd,
             provider: this.name,
           }),
         );
@@ -84,6 +104,8 @@ export class OpenAICodexProvider implements SessionProviderPort {
   async getDetail(filePath: string): Promise<SessionDetail> {
     try {
       const lines = readLines(filePath);
+      const metadata = this.extractMetadata(lines);
+
       const messages = lines
         .map((line) => {
           const parsedEntry = JSON.parse(line);
@@ -100,8 +122,8 @@ export class OpenAICodexProvider implements SessionProviderPort {
       return new SessionDetail({
         messages,
         totalMessages: messages.length,
-        cwd: "",
-        gitBranch: "",
+        cwd: metadata.cwd,
+        gitBranch: metadata.gitBranch,
       });
     } catch {
       return new SessionDetail({ messages: [], totalMessages: 0, cwd: "", gitBranch: "" });

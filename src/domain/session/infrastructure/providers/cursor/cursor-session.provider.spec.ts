@@ -116,6 +116,39 @@ describe("CursorSessionProvider", () => {
     expect(sessions).toHaveLength(0);
   });
 
+  it("getDetail extracts cwd from message content", async () => {
+    const dbPath = path.join(tmpDir, "abc123", "uuid-5", "store.db");
+
+    createTestDb(dbPath, { agentId: "uuid-5", name: "CWD Test", createdAt: Date.now() }, [
+      {
+        role: "user",
+        content: "<user_info>\nOS: darwin\nWorkspace Path: /home/test/project\n</user_info>",
+      },
+      { role: "user", content: "<user_query>\nFix the bug\n</user_query>" },
+      { role: "assistant", content: "Looking into it." },
+    ]);
+
+    const provider = new CursorSessionProvider(tmpDir);
+    const detail = await provider.getDetail(dbPath);
+
+    expect(detail.cwd).toBe("/home/test/project");
+    expect(detail.messages).toHaveLength(3);
+  });
+
+  it("getDetail returns empty cwd when no workspace path in messages", async () => {
+    const dbPath = path.join(tmpDir, "abc123", "uuid-6", "store.db");
+
+    createTestDb(dbPath, { agentId: "uuid-6", name: "No CWD", createdAt: Date.now() }, [
+      { role: "user", content: "Just a plain question" },
+      { role: "assistant", content: "Answer" },
+    ]);
+
+    const provider = new CursorSessionProvider(tmpDir);
+    const detail = await provider.getDetail(dbPath);
+
+    expect(detail.cwd).toBe("");
+  });
+
   it("has correct name and resume command", () => {
     const provider = new CursorSessionProvider(tmpDir);
     expect(provider.name).toBe("Cursor");

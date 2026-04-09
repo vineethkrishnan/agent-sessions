@@ -8,8 +8,9 @@ Each AI agent stores sessions differently. agent-sessions reads each format nati
 |----------|----------|--------|-------------------|
 | **Claude** | `~/.claude/projects/<encoded-path>/` | JSONL | Project, git branch, cwd, messages |
 | **Gemini** | `~/.gemini/tmp/<hash>/chats/` | JSON | Project, git branch, cwd, messages |
-| **OpenAI Codex** | `~/.codex/sessions/` (recursive) | JSONL | Messages only |
+| **OpenAI Codex** | `~/.codex/sessions/` (recursive) | JSONL | Project, git branch, cwd, messages |
 | **Cursor** | `~/.cursor/chats/<hash>/<uuid>/store.db` | SQLite | Session name, cwd, messages |
+| **Windsurf** | Platform-specific (see below) | JSON | Title, git branch, cwd, messages |
 
 ## Claude Code
 
@@ -72,7 +73,7 @@ Sessions are stored as JSONL files in `~/.codex/sessions/`, scanned recursively.
 {"role": "assistant", "content": "I'll create the API..."}
 ```
 
-Codex uses `role` (not `type`) to identify message authors. Project and git branch metadata are not available in the session files.
+Codex uses `role` (not `type`) to identify message authors. Metadata fields (`cwd`, `gitBranch`, `project`) are extracted from JSONL entries when present.
 
 ## Cursor
 
@@ -100,18 +101,46 @@ Cursor stores sessions as SQLite databases at `~/.cursor/chats/<workspace-hash>/
 
 The first user message typically contains Cursor's system context (`<user_info>` block with OS, workspace path, etc.). The actual user query is wrapped in `<user_query>` tags in subsequent messages. agent-sessions extracts the workspace path and strips the XML wrappers automatically.
 
+## Windsurf (Cascade)
+
+Windsurf stores Cascade conversations as JSON files. The storage location is platform-specific:
+
+| Platform | Path |
+|----------|------|
+| macOS | `~/Library/Application Support/Windsurf/User/globalStorage/codeium.windsurf/cascade/` |
+| Linux | `~/.config/Windsurf/User/globalStorage/codeium.windsurf/cascade/` |
+| Windows | `%APPDATA%/Windsurf/User/globalStorage/codeium.windsurf/cascade/` |
+
+Override with `WINDSURF_SESSIONS_DIR` environment variable.
+
+### JSON Structure
+
+```json
+{
+  "conversationId": "conv-abc123",
+  "title": "Fix Auth Bug",
+  "workspace": "/home/user/project",
+  "cwd": "/home/user/project",
+  "gitBranch": "main",
+  "messages": [
+    { "role": "user", "content": "Fix the auth bug" },
+    { "role": "assistant", "content": "I'll look into it..." }
+  ]
+}
+```
+
 ## What agent-sessions Extracts
 
 ### Session List
 
-| Field | Claude | Gemini | Codex | Cursor |
-|-------|--------|--------|-------|--------|
-| Session ID | Filename | Filename | Filename | Agent UUID |
-| Project | Decoded dir name | JSON field | "Unknown" | Session name |
-| Git Branch | JSONL metadata | JSON field | — | — |
-| Working Dir | JSONL metadata | JSON field | — | Extracted from context |
-| Message Count | user + assistant | user + gemini | user + assistant | user + assistant |
-| Preview | First user message | First user message | First user message | First user query (XML-stripped) |
+| Field | Claude | Gemini | Codex | Cursor | Windsurf |
+|-------|--------|--------|-------|--------|----------|
+| Session ID | Filename | Filename | Filename | Agent UUID | Conversation ID |
+| Project | Decoded dir name | JSON field | JSONL metadata | Session name | Title / workspace |
+| Git Branch | JSONL metadata | JSON field | JSONL metadata | — | JSON field |
+| Working Dir | JSONL metadata | JSON field | JSONL metadata | Extracted from context | JSON field |
+| Message Count | user + assistant | user + gemini | user + assistant | user + assistant | user + assistant |
+| Preview | First user message | First user message | First user message | First user query (XML-stripped) | First user message |
 
 ### Session Preview
 

@@ -186,6 +186,16 @@ export class CursorSessionProvider implements SessionProviderPort {
     return results;
   }
 
+  private extractCwdFromMessages(messages: CursorMessage[]): string {
+    for (const msg of messages) {
+      if (msg.role !== "user") continue;
+      const raw = stringifyContent(msg.content);
+      const cwdMatch = raw.match(/Workspace Path:\s*(.+)/);
+      if (cwdMatch) return cwdMatch[1]!.trim();
+    }
+    return "";
+  }
+
   async getDetail(filePath: string): Promise<SessionDetail> {
     const db = this.openDb(filePath);
     if (!db) {
@@ -194,6 +204,7 @@ export class CursorSessionProvider implements SessionProviderPort {
 
     try {
       const messages = this.readMessages(db);
+      const cwd = this.extractCwdFromMessages(messages);
 
       const sessionMessages = messages.map((msg) => ({
         role: msg.role as "user" | "assistant",
@@ -203,7 +214,7 @@ export class CursorSessionProvider implements SessionProviderPort {
       return new SessionDetail({
         messages: sessionMessages,
         totalMessages: sessionMessages.length,
-        cwd: "",
+        cwd,
         gitBranch: "",
       });
     } catch {

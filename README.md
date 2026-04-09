@@ -6,7 +6,7 @@
 
 **[Documentation](https://agent-sessions.vineethnk.in/)** · **[npm](https://www.npmjs.com/package/@vineethnkrishnan/agent-sessions)** · **[GitHub](https://github.com/vineethkrishnan/agent-sessions)**
 
-Interactive session manager for CLI agents — [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Gemini CLI](https://github.com/google-gemini/gemini-cli), [OpenAI Codex](https://github.com/openai/codex), and [Cursor Agent](https://www.cursor.com/). Browse, search, delete, and resume past conversations from your terminal.
+Interactive session manager for CLI agents — [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Gemini CLI](https://github.com/google-gemini/gemini-cli), [OpenAI Codex](https://github.com/openai/codex), [Cursor Agent](https://www.cursor.com/), and [Windsurf](https://codeium.com/windsurf). Browse, search, delete, and resume past conversations from your terminal.
 
 These CLI agents provide `--resume <session-id>` but no way to browse or search through session history. This tool fills that gap with a unified TUI for all your AI sessions.
 
@@ -14,7 +14,7 @@ These CLI agents provide `--resume <session-id>` but no way to browse or search 
 
 ## Features
 
-- **Multi-agent support** — Claude, Gemini, Codex, and Cursor in one tool
+- **Multi-agent support** — Claude, Gemini, Codex, Cursor, and Windsurf in one tool
 - Browse all sessions sorted by most recent across agents
 - Shows date, agent, project, git branch, message count, and first message preview
 - **Session preview** — press `p` to peek into a conversation before resuming
@@ -85,7 +85,8 @@ src/
 │   │   │   ├── claude/          # JSONL parser
 │   │   │   ├── gemini/          # JSON parser
 │   │   │   ├── openai/          # JSONL parser
-│   │   │   └── cursor/          # SQLite reader
+│   │   │   ├── cursor/          # SQLite reader
+│   │   │   └── windsurf/        # JSON parser
 │   │   └── parsers/             # Shared JSONL parser
 │   ├── presenters/              # UI layer (Ink/React)
 │   │   ├── components/
@@ -157,7 +158,20 @@ chore: update dependencies
   - [Gemini CLI](https://github.com/google-gemini/gemini-cli)
   - [OpenAI Codex](https://github.com/openai/codex)
   - [Cursor Agent](https://www.cursor.com/)
+  - [Windsurf](https://codeium.com/windsurf)
 - [fzf](https://github.com/junegunn/fzf) (optional)
+
+## Environment Variables
+
+Override default session storage paths per provider:
+
+| Variable | Default |
+|----------|---------|
+| `CLAUDE_SESSIONS_DIR` | `~/.claude/projects` |
+| `GEMINI_TMP_DIR` | `~/.gemini/tmp` |
+| `CODEX_SESSIONS_DIR` | `~/.codex/sessions` |
+| `CURSOR_SESSIONS_DIR` | `~/.cursor/chats` |
+| `WINDSURF_SESSIONS_DIR` | Platform-specific (see [docs](https://agent-sessions.vineethnk.in/session-format.html#windsurf-cascade)) |
 
 ## Documentation
 

@@ -4,7 +4,7 @@
 [![CI](https://github.com/vineethkrishnan/agent-sessions/actions/workflows/ci.yml/badge.svg)](https://github.com/vineethkrishnan/agent-sessions/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**[Documentation](https://agent-sessions.vineethnk.in/)** · **[npm](https://www.npmjs.com/package/@vineethnkrishnan/agent-sessions)** · **[GitHub](https://github.com/vineethkrishnan/agent-sessions)**
+**[Documentation](https://agent-sessions.vinelabs.de/)** · **[npm](https://www.npmjs.com/package/@vineethnkrishnan/agent-sessions)** · **[GitHub](https://github.com/vineethkrishnan/agent-sessions)**
 
 Interactive session manager for CLI agents — [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Gemini CLI](https://github.com/google-gemini/gemini-cli), [OpenAI Codex](https://github.com/openai/codex), [Cursor Agent](https://www.cursor.com/), and [Windsurf](https://codeium.com/windsurf). Browse, search, delete, and resume past conversations from your terminal.
 
@@ -171,11 +171,11 @@ Override default session storage paths per provider:
 | `GEMINI_TMP_DIR` | `~/.gemini/tmp` |
 | `CODEX_SESSIONS_DIR` | `~/.codex/sessions` |
 | `CURSOR_SESSIONS_DIR` | `~/.cursor/chats` |
-| `WINDSURF_SESSIONS_DIR` | Platform-specific (see [docs](https://agent-sessions.vineethnk.in/session-format.html#windsurf-cascade)) |
+| `WINDSURF_SESSIONS_DIR` | Platform-specific (see [docs](https://agent-sessions.vinelabs.de/session-format.html#windsurf-cascade)) |
 
 ## Documentation
 
-Full documentation is available at **[agent-sessions.vineethnk.in](https://agent-sessions.vineethnk.in/)**.
+Full documentation is available at **[agent-sessions.vinelabs.de](https://agent-sessions.vinelabs.de/)**.
 
 ## License
 

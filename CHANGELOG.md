@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.16](https://github.com/vineethkrishnan/agent-sessions/compare/v0.1.15...v0.1.16) (2026-05-31)
+
+
+### Bug Fixes
+
+* **deps:** resolve security advisories in lockfile ([#51](https://github.com/vineethkrishnan/agent-sessions/issues/51)) ([3addec3](https://github.com/vineethkrishnan/agent-sessions/commit/3addec3375f5930d52a37e522e276bfb33531d53))
+
 ## [0.1.15](https://github.com/vineethkrishnan/agent-sessions/compare/v0.1.14...v0.1.15) (2026-05-03)
 
 

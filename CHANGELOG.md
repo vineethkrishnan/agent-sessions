@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.17](https://github.com/vineethkrishnan/agent-sessions/compare/v0.1.16...v0.1.17) (2026-11-20)
+
+
+### CI/CD
+
+* **deps:** bump github/codeql-action in the actions group ([#63](https://github.com/vineethkrishnan/agent-sessions/issues/63)) ([0c25b5c](https://github.com/vineethkrishnan/agent-sessions/commit/0c25b5cbee2f960cd5e77af579065422038d8f6d))
+* **deps:** bump the actions group across 1 directory with 3 updates ([#56](https://github.com/vineethkrishnan/agent-sessions/issues/56)) ([946e5ac](https://github.com/vineethkrishnan/agent-sessions/commit/946e5ac9df3e244b120481fab73eb59fd0e39f48))
+* **deps:** bump the actions group with 2 updates ([#59](https://github.com/vineethkrishnan/agent-sessions/issues/59)) ([5b9ff73](https://github.com/vineethkrishnan/agent-sessions/commit/5b9ff73fe8d1b5c3e90507b74cc2bde78ec91ac9))
+
 ## [0.1.16](https://github.com/vineethkrishnan/agent-sessions/compare/v0.1.15...v0.1.16) (2026-05-31)
 
 
